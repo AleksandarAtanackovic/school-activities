@@ -1,0 +1,11 @@
+# Disable directory listings
+Options -Indexes
+
+# Block direct web access to sensitive files (PHP includes still work fine,
+# because PHP include() reads from disk, not over HTTP).
+<FilesMatch "^(config\.php|schema\.sql)$">
+    Require all denied
+</FilesMatch>
+<FilesMatch "\.(md|sql|log)$">
+    Require all denied
+</FilesMatch>
