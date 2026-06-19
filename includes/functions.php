@@ -34,7 +34,7 @@ function csrf_check(): void {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (empty($_POST['csrf']) || !hash_equals($_SESSION['csrf'] ?? '', $_POST['csrf'])) {
             http_response_code(419);
-            die('Session expired or invalid request. Please go back and try again.');
+            die('Сесија је истекла или је захтев неисправан. Вратите се назад и покушајте поново.');
         }
     }
 }
@@ -53,6 +53,19 @@ function teacher_owns(int $teacherId, int $activityId): bool {
     return (bool)$st->fetchColumn();
 }
 
+// --- Serbian Cyrillic labels for stored (English) enum values ---
+function status_label(string $s): string {
+    static $m = [
+        'pending'  => 'На чекању', 'approved' => 'Одобрено', 'rejected' => 'Одбијено',
+        'open'     => 'Отворено',  'closed'   => 'Затворено', 'archived' => 'Архивирано',
+        'present'  => 'Присутан',  'absent'   => 'Одсутан',   'excused'  => 'Оправдано',
+    ];
+    return $m[$s] ?? $s;
+}
+function role_label(string $r): string {
+    static $m = ['admin' => 'Администратор', 'teacher' => 'Наставник', 'student' => 'Ученик'];
+    return $m[$r] ?? $r;
+}
 function status_badge(string $status): string {
-    return '<span class="badge badge-' . e($status) . '">' . e(ucfirst($status)) . '</span>';
+    return '<span class="badge badge-' . e($status) . '">' . e(status_label($status)) . '</span>';
 }

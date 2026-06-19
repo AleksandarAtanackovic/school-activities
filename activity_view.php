@@ -6,7 +6,7 @@ $id = (int)($_GET['id'] ?? 0);
 $st = db()->prepare("SELECT * FROM activities WHERE id=?");
 $st->execute([$id]);
 $a = $st->fetch();
-if (!$a) { http_response_code(404); die('Activity not found.'); }
+if (!$a) { http_response_code(404); die('Активност није пронађена.'); }
 
 $manages = can_manage_activity($u, $id);
 
@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD']==='POST' && ($_POST['action'] ?? '')==='notify' &
     if ($title!=='' && $msg!=='') {
         db()->prepare("INSERT INTO notifications (activity_id,title,message,created_by) VALUES (?,?,?,?)")
             ->execute([$id,$title,$msg,$u['id']]);
-        flash('Notification posted.');
+        flash('Обавештење је објављено.');
     }
     redirect('activity_view.php?id='.$id);
 }
@@ -55,65 +55,65 @@ include __DIR__ . '/includes/header.php';
 <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px">
   <div>
     <h1><?= e($a['name']) ?> <?= status_badge($a['status']) ?></h1>
-    <p class="sub"><?= e($a['schedule_text'] ?: 'No schedule set') ?> <?= $a['location']? '· '.e($a['location']):'' ?></p>
+    <p class="sub"><?= e($a['schedule_text'] ?: 'Распоред није постављен') ?> <?= $a['location']? '· '.e($a['location']):'' ?></p>
   </div>
   <div class="row-actions">
     <?php if ($manages): ?>
-      <a class="btn btn-ghost" href="activity_edit.php?id=<?= $id ?>">Edit</a>
-      <a class="btn btn-ghost" href="applications.php?activity=<?= $id ?>">Applications</a>
+      <a class="btn btn-ghost" href="activity_edit.php?id=<?= $id ?>">Измени</a>
+      <a class="btn btn-ghost" href="applications.php?activity=<?= $id ?>">Пријаве</a>
     <?php endif; ?>
   </div>
 </div>
 
 <div class="card">
-  <p><?= nl2br(e($a['description'] ?: 'No description.')) ?></p>
-  <p class="muted">Teachers: <?= $teachers ? e(implode(', ', $teachers)) : '—' ?>
-     &nbsp;·&nbsp; Capacity: <?= $enrolled ?>/<?= (int)$a['max_students'] ?><?= $full?' (full)':'' ?></p>
+  <p><?= nl2br(e($a['description'] ?: 'Нема описа.')) ?></p>
+  <p class="muted">Наставници: <?= $teachers ? e(implode(', ', $teachers)) : '—' ?>
+     &nbsp;·&nbsp; Капацитет: <?= $enrolled ?>/<?= (int)$a['max_students'] ?><?= $full?' (попуњено)':'' ?></p>
 
   <?php if (is_student($u)): ?>
     <?php if ($myStatus): ?>
-      <p>Your application: <?= status_badge($myStatus) ?></p>
+      <p>Ваша пријава: <?= status_badge($myStatus) ?></p>
     <?php elseif ($a['status']!=='open'): ?>
-      <p class="muted">This activity is not open for applications.</p>
+      <p class="muted">Ова активност није отворена за пријаве.</p>
     <?php elseif ($full): ?>
-      <p class="muted">This activity is full.</p>
+      <p class="muted">Ова активност је попуњена.</p>
     <?php else: ?>
       <form method="post" action="apply.php" class="inline">
         <?= csrf_field() ?>
         <input type="hidden" name="activity_id" value="<?= $id ?>">
-        <button class="btn">Apply to this activity</button>
+        <button class="btn">Пријави се на ову активност</button>
       </form>
     <?php endif; ?>
   <?php endif; ?>
 </div>
 
 <?php if ($manages): ?>
-<h2>Enrolled students (<?= $enrolled ?>)</h2>
-<?php if (!$members): ?><div class="card muted">No students enrolled yet.</div><?php else: ?>
-<table><tr><th>Student</th><th>Class</th></tr>
+<h2>Уписани ученици (<?= $enrolled ?>)</h2>
+<?php if (!$members): ?><div class="card muted">Још нема уписаних ученика.</div><?php else: ?>
+<table><tr><th>Ученик</th><th>Разред</th></tr>
 <?php foreach ($members as $m): ?><tr><td><?= e($m['name']) ?></td><td class="muted"><?= e($m['grade_class'] ?: '—') ?></td></tr><?php endforeach; ?>
 </table>
 <?php endif; ?>
 <?php endif; ?>
 
-<h2>Notifications</h2>
+<h2>Обавештења</h2>
 <?php if ($manages): ?>
 <div class="card">
   <form method="post">
     <?= csrf_field() ?>
     <input type="hidden" name="action" value="notify">
-    <label>Title</label><input name="title" required>
-    <label>Message</label><textarea name="message" required></textarea>
-    <div style="margin-top:12px"><button class="btn btn-sm">Post notification</button></div>
+    <label>Наслов</label><input name="title" required>
+    <label>Порука</label><textarea name="message" required></textarea>
+    <div style="margin-top:12px"><button class="btn btn-sm">Објави обавештење</button></div>
   </form>
 </div>
 <?php endif; ?>
-<?php if (!$notes): ?><div class="card muted">No notifications yet.</div><?php else: ?>
+<?php if (!$notes): ?><div class="card muted">Још нема обавештења.</div><?php else: ?>
   <?php foreach ($notes as $n): ?>
     <div class="card">
       <strong><?= e($n['title']) ?></strong>
       <div style="margin:6px 0"><?= nl2br(e($n['message'])) ?></div>
-      <span class="muted" style="font-size:13px"><?= e($n['author'] ?: 'Staff') ?> · <?= e(date('M j, Y', strtotime($n['created_at']))) ?></span>
+      <span class="muted" style="font-size:13px"><?= e($n['author'] ?: 'Особље') ?> · <?= e(date('d.m.Y.', strtotime($n['created_at']))) ?></span>
     </div>
   <?php endforeach; ?>
 <?php endif; ?>

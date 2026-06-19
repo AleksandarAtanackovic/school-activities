@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/includes/auth.php';
 $u = require_role('admin', 'teacher');
-$page_title = 'Applications';
+$page_title = 'Пријаве';
 
 // Handle approve/reject
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -17,15 +17,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $act->execute([$app['activity_id']]);
             $max = (int)$act->fetchColumn();
             if (approved_count((int)$app['activity_id']) >= $max) {
-                flash('Cannot approve: the activity is already at capacity ('.$max.').');
+                flash('Није могуће одобрити: активност је већ попуњена ('.$max.').');
                 redirect('applications.php');
             }
         }
         db()->prepare("UPDATE applications SET status=?, decided_at=NOW(), decided_by=? WHERE id=?")
             ->execute([$decision, $u['id'], $appId]);
-        flash('Application ' . $decision . '.');
+        flash($decision === 'approved' ? 'Пријава је одобрена.' : 'Пријава је одбијена.');
     } else {
-        flash('You cannot act on that application.');
+        flash('Не можете да обрадите ту пријаву.');
     }
     redirect('applications.php' . (isset($_POST['activity']) ? '?activity='.(int)$_POST['activity'] : ''));
 }
@@ -54,20 +54,20 @@ $rows = $st->fetchAll();
 
 include __DIR__ . '/includes/header.php';
 ?>
-<h1>Applications</h1>
-<p class="sub"><?= is_admin($u) ? 'All student applications.' : 'Applications for your activities.' ?></p>
+<h1>Пријаве</h1>
+<p class="sub"><?= is_admin($u) ? 'Све пријаве ученика.' : 'Пријаве за ваше активности.' ?></p>
 
 <?php if (!$rows): ?>
-  <div class="card muted">No applications to show.</div>
+  <div class="card muted">Нема пријава за приказ.</div>
 <?php else: ?>
 <table>
-  <tr><th>Student</th><th>Class</th><th>Activity</th><th>Applied</th><th>Status</th><th class="right">Action</th></tr>
+  <tr><th>Ученик</th><th>Разред</th><th>Активност</th><th>Пријављен</th><th>Статус</th><th class="right">Радња</th></tr>
   <?php foreach ($rows as $r): $full = $r['approved_now'] >= $r['max_students']; ?>
   <tr>
     <td><?= e($r['student_name']) ?></td>
     <td class="muted"><?= e($r['grade_class'] ?: '—') ?></td>
     <td><?= e($r['activity_name']) ?> <span class="muted">(<?= (int)$r['approved_now'] ?>/<?= (int)$r['max_students'] ?>)</span></td>
-    <td class="muted"><?= e(date('M j, Y', strtotime($r['applied_at']))) ?></td>
+    <td class="muted"><?= e(date('d.m.Y.', strtotime($r['applied_at']))) ?></td>
     <td><?= status_badge($r['status']) ?></td>
     <td class="right">
       <?php if ($r['status']==='pending'): ?>
@@ -75,8 +75,8 @@ include __DIR__ . '/includes/header.php';
         <?= csrf_field() ?>
         <input type="hidden" name="app_id" value="<?= (int)$r['id'] ?>">
         <?php if ($filterActivity): ?><input type="hidden" name="activity" value="<?= $filterActivity ?>"><?php endif; ?>
-        <button class="btn btn-sm btn-ok" name="decision" value="approved" <?= $full?'disabled title="Activity is full"':'' ?>>Approve</button>
-        <button class="btn btn-sm btn-bad" name="decision" value="rejected">Reject</button>
+        <button class="btn btn-sm btn-ok" name="decision" value="approved" <?= $full?'disabled title="Активност је попуњена"':'' ?>>Одобри</button>
+        <button class="btn btn-sm btn-bad" name="decision" value="rejected">Одбиј</button>
       </form>
       <?php else: ?><span class="muted">—</span><?php endif; ?>
     </td>

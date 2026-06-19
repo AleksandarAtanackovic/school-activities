@@ -21,7 +21,7 @@ function db(): PDO {
             ]);
         } catch (PDOException $e) {
             http_response_code(500);
-            die('Database connection failed. Check config.php. '
+            die('Повезивање са базом није успело. Проверите config.php. '
                 . (DEBUG ? '(' . htmlspecialchars($e->getMessage()) . ')' : ''));
         }
     }

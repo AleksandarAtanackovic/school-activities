@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/includes/auth.php';
 $u = require_role('student');
-$page_title = 'Notifications';
+$page_title = 'Обавештења';
 
 // Notifications from activities where the student is approved (enrolled).
 $st = db()->prepare("SELECT n.*, a.name AS activity_name, au.name AS author
@@ -17,11 +17,11 @@ $rows = $st->fetchAll();
 
 include __DIR__ . '/includes/header.php';
 ?>
-<h1>Notifications</h1>
-<p class="sub">Updates from the activities you're enrolled in.</p>
+<h1>Обавештења</h1>
+<p class="sub">Обавештења из активности у које сте уписани.</p>
 
 <?php if (!$rows): ?>
-  <div class="card muted">No notifications yet.</div>
+  <div class="card muted">Још нема обавештења.</div>
 <?php else: foreach ($rows as $n): ?>
   <div class="card">
     <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap">
@@ -29,7 +29,7 @@ include __DIR__ . '/includes/header.php';
       <span class="pill"><?= e($n['activity_name']) ?></span>
     </div>
     <div style="margin:6px 0"><?= nl2br(e($n['message'])) ?></div>
-    <span class="muted" style="font-size:13px"><?= e($n['author'] ?: 'Staff') ?> · <?= e(date('M j, Y', strtotime($n['created_at']))) ?></span>
+    <span class="muted" style="font-size:13px"><?= e($n['author'] ?: 'Особље') ?> · <?= e(date('d.m.Y.', strtotime($n['created_at']))) ?></span>
   </div>
 <?php endforeach; endif; ?>
 

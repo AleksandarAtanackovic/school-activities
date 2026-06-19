@@ -7,6 +7,7 @@
 -- The admin is forced to set a new password on first login.
 -- =====================================================================
 
+SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 DROP TABLE IF EXISTS attendance;
 DROP TABLE IF EXISTS sessions;
@@ -104,4 +105,4 @@ CREATE TABLE attendance (
 -- The only seeded row: one admin, forced to change password on first login.
 -- Password hash below corresponds to "admin123".
 INSERT INTO users (name, email, password, role, must_change_password) VALUES
-('Administrator','admin@admin.com','$2y$10$LAHHDhNto2hs5oK3xtIi/.lDqbWXq8n.ZFgb06HiMfgKJcekGOXje','admin',1);
+('Администратор','admin@admin.com','$2y$10$LAHHDhNto2hs5oK3xtIi/.lDqbWXq8n.ZFgb06HiMfgKJcekGOXje','admin',1);

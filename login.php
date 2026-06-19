@@ -15,33 +15,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['uid'] = $user['id'];
         redirect('dashboard.php');
     }
-    $error = 'Incorrect email or password.';
+    $error = 'Погрешан имејл или лозинка.';
 }
 ?><!DOCTYPE html>
-<html lang="en"><head>
+<html lang="sr"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Log in · <?= e(APP_NAME) ?></title>
+<title>Пријава · <?= e(APP_NAME) ?></title>
 <link rel="stylesheet" href="assets/style.css">
 </head><body>
 <div class="login-wrap">
   <h1><?= e(APP_NAME) ?></h1>
-  <p class="sub">Sign in to continue</p>
+  <p class="sub">Пријавите се да наставите</p>
   <div class="card">
     <?php if ($error): ?><div class="err"><?= e($error) ?></div><?php endif; ?>
     <form method="post">
       <?= csrf_field() ?>
-      <label>Email</label>
+      <label>Имејл</label>
       <input type="email" name="email" required autofocus value="<?= e($_POST['email'] ?? '') ?>">
-      <label>Password</label>
+      <label>Лозинка</label>
       <input type="password" name="password" required>
-      <div style="margin-top:18px"><button class="btn" style="width:100%">Log in</button></div>
+      <div style="margin-top:18px"><button class="btn" style="width:100%">Пријава</button></div>
     </form>
-    <div class="creds">
-      <strong>Demo logins</strong><br>
-      Admin: admin@school.test / admin123<br>
-      Teacher: adams@school.test / teacher123<br>
-      Student: anna@school.test / student123
-    </div>
   </div>
 </div>
 </body></html>

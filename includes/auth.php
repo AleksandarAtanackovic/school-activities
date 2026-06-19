@@ -36,7 +36,7 @@ function require_role(string ...$roles): array {
     $u = require_login();
     if (!in_array($u['role'], $roles, true)) {
         http_response_code(403);
-        die('Access denied: you do not have permission to view this page.');
+        die('Приступ одбијен: немате дозволу за приступ овој страници.');
     }
     return $u;
 }

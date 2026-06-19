@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/includes/auth.php';
 $u = require_login();
-$page_title = 'Change password';
+$page_title = 'Промена лозинке';
 $forced = !empty($u['must_change_password']);
 $error = '';
 
@@ -11,40 +11,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $new     = $_POST['new'] ?? '';
     $confirm = $_POST['confirm'] ?? '';
     if (!password_verify($cur, $u['password'])) {
-        $error = 'Your current password is incorrect.';
+        $error = 'Тренутна лозинка није исправна.';
     } elseif (strlen($new) < 6) {
-        $error = 'The new password must be at least 6 characters.';
+        $error = 'Нова лозинка мора имати најмање 6 карактера.';
     } elseif ($new !== $confirm) {
-        $error = 'The new password and confirmation do not match.';
+        $error = 'Нова лозинка и потврда се не подударају.';
     } elseif ($new === $cur) {
-        $error = 'Please choose a password different from the current one.';
+        $error = 'Изаберите лозинку која се разликује од тренутне.';
     } else {
         db()->prepare("UPDATE users SET password=?, must_change_password=0 WHERE id=?")
             ->execute([password_hash($new, PASSWORD_DEFAULT), $u['id']]);
-        flash('Your password has been updated.');
+        flash('Ваша лозинка је ажурирана.');
         redirect('dashboard.php');
     }
 }
 include __DIR__ . '/includes/header.php';
 ?>
-<h1>Change password</h1>
+<h1>Промена лозинке</h1>
 <?php if ($forced): ?>
-  <p class="sub">For security, please set a new password before continuing.</p>
+  <p class="sub">Из безбедносних разлога, поставите нову лозинку пре наставка.</p>
 <?php else: ?>
-  <p class="sub"><a href="dashboard.php">&larr; Back to dashboard</a></p>
+  <p class="sub"><a href="dashboard.php">&larr; Назад на почетну</a></p>
 <?php endif; ?>
 
 <div class="card" style="max-width:420px">
   <?php if ($error): ?><div class="err"><?= e($error) ?></div><?php endif; ?>
   <form method="post">
     <?= csrf_field() ?>
-    <label>Current password</label>
+    <label>Тренутна лозинка</label>
     <input type="password" name="current" required autofocus>
-    <label>New password (min 6 characters)</label>
+    <label>Нова лозинка (мин. 6 карактера)</label>
     <input type="password" name="new" required>
-    <label>Confirm new password</label>
+    <label>Потврда нове лозинке</label>
     <input type="password" name="confirm" required>
-    <div style="margin-top:18px"><button class="btn">Update password</button></div>
+    <div style="margin-top:18px"><button class="btn">Ажурирај лозинку</button></div>
   </form>
 </div>
 

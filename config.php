@@ -11,7 +11,7 @@ define('DB_NAME', 'extracurricular');    // your database name
 define('DB_USER', 'root');               // your database user
 define('DB_PASS', '');                   // your database password
 
-define('APP_NAME', 'Extracurricular Activity Tracker');
+define('APP_NAME', 'Ваннаставне активности');
 
 // School year boundaries (used as defaults for reports). Adjust per year.
 define('SCHOOL_YEAR_START', '2025-09-01');

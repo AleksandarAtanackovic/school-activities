@@ -1,132 +1,108 @@
-# Extracurricular Activity Tracker — Deployment Guide (cPanel)
+# Праћење ваннаставних активности — Упутство за постављање (cPanel)
 
-A self-hosted PHP + MySQL web app for tracking high-school extracurricular
-activities. No framework, no build step, no external services — it runs on any
-standard cPanel/Apache + MySQL shared host.
+Самостална PHP + MySQL веб апликација за праћење ваннаставних активности у
+средњој школи. Без фрејмворка, без билд корака, без спољних сервиса — ради на
+сваком стандардном cPanel/Apache + MySQL хостингу.
 
-This is **Milestone 1**: accounts & roles, activities, teacher assignment,
-applications & approval, enrollment, notifications, and user management.
-Attendance tracking and the Excel/PDF reports come in the next milestones
-(the database is already built to support them).
-
----
-
-## What's included
-
-```
-config.php          <- the ONLY file you need to edit
-schema.sql          <- import this once into your MySQL database
-.htaccess           <- security hardening
-index.php           login.php   logout.php   dashboard.php
-activities.php      activity_edit.php   activity_view.php   apply.php
-applications.php    my_activities.php   notifications.php   users.php
-includes/           shared code (db, auth, helpers, layout)
-assets/style.css    styling
-```
+Ово је **Фаза 1 (Milestone 1)**: налози и улоге, активности, додела наставника,
+пријаве и одобравање, упис, обавештења, управљање корисницима и промена лозинке
+(уз обавезну промену при првом пријављивању). Евиденција присуства и Excel/PDF
+извештаји долазе у следећим фазама (база је већ припремљена за њих).
 
 ---
 
-## Deploy to cPanel (about 5 minutes)
+## Шта се налази у пакету
 
-### 1. Create the database
-In cPanel → **MySQL Databases**:
-1. Create a new database (e.g. `extra`). cPanel will name it like `cpaneluser_extra`.
-2. Create a new MySQL user with a strong password.
-3. Add that user to the database and grant **ALL PRIVILEGES**.
-Write down the final database name, user name, and password.
+```
+config.php          <- ЈЕДИНИ фајл који морате да измените
+schema.sql          <- демо подаци за пробу
+schema-clean.sql    <- чиста база за продукцију (само админ)
+.htaccess           <- безбедносна подешавања
+index.php  login.php  logout.php  dashboard.php  change_password.php
+activities.php  activity_edit.php  activity_view.php  apply.php
+applications.php  my_activities.php  notifications.php  users.php
+includes/           заједнички код (база, ауторизација, помоћне ф-је, изглед)
+assets/style.css    стилови
+```
 
-### 2. Import the tables
-In cPanel → **phpMyAdmin**:
-1. Select your new database in the left sidebar.
-2. Open the **Import** tab.
-3. Choose your SQL file → **Go**:
-   - **`schema-clean.sql`** — for the real site: all tables, **no sample data**,
-     and a single admin account (`admin@admin.com` / `admin123`) that is forced
-     to set a new password on first login. **Use this one for production.**
-   - **`schema.sql`** — the demo dataset (sample users, activities, applications)
-     for trying things out. Don't use this on the live site.
+---
 
-### 3. Upload the files
-In cPanel → **File Manager** (or FTP):
-- Upload everything **into `public_html`** (or into a subfolder like
-  `public_html/activities/` if you want it at `yoursite.com/activities`).
-- Make sure the hidden `.htaccess` files are uploaded too (enable
-  "Show Hidden Files" in File Manager settings).
+## Постављање на cPanel (око 5 минута)
 
-### 4. Configure
-Edit **`config.php`** and set:
+### 1. Креирајте базу
+У cPanel → **MySQL Databases**:
+1. Направите нову базу (нпр. `extra`). cPanel ће је назвати као `korisnik_extra`.
+2. Направите MySQL корисника са јаком лозинком.
+3. Доделите тог корисника бази са **ALL PRIVILEGES**.
+Запишите коначно име базе, корисника и лозинку.
+
+### 2. Увезите табеле
+У cPanel → **phpMyAdmin**:
+1. Изаберите вашу базу у левој колони.
+2. Отворите картицу **Import (Увоз)**.
+3. Изаберите SQL фајл → **Go**:
+   - **`schema-clean.sql`** — за прави сајт: све табеле, **без демо података**,
+     и један админ налог (`admin@admin.com` / `admin123`) који мора да промени
+     лозинку при првом пријављивању. **Ово користите за продукцију.**
+   - **`schema.sql`** — демо подаци (примери корисника, активности, пријава) за
+     пробу. Немојте га користити на правом сајту.
+
+### 3. Отпремите фајлове
+У cPanel → **File Manager** (или FTP):
+- Отпремите све **у `public_html`** (или у подфолдер као `public_html/extra/`).
+- Укључите приказ скривених фајлова да би се отпремили и `.htaccess` фајлови.
+
+### 4. Подесите
+Измените **`config.php`**:
 ```php
-define('DB_HOST', 'localhost');          // usually 'localhost' on cPanel
-define('DB_NAME', 'cpaneluser_extra');   // your database name
-define('DB_USER', 'cpaneluser_extra');   // your database user
-define('DB_PASS', 'your-password');      // your database password
+define('DB_HOST', 'localhost');       // готово увек 'localhost' на cPanel
+define('DB_NAME', 'korisnik_extra');  // име базе
+define('DB_USER', 'korisnik_extra');  // корисник базе
+define('DB_PASS', 'vasa-lozinka');    // лозинка базе
 ```
-Also set `define('DEBUG', false);` once it's working, for the live site.
+Када проради, ставите `define('DEBUG', false);` за прави сајт.
 
-### 5. Open it
-Visit your site. You'll land on the login screen.
-
----
-
-## First login (clean install)
-
-If you imported `schema-clean.sql`, log in with:
-
-- **Email:** admin@admin.com
-- **Password:** admin123
-
-You'll immediately be required to choose a new password. After that, open
-**Users** to create your real teacher and student accounts. Each new user gets a
-temporary password you set when creating them; they can change it any time from
-the **Password** link in the top-right corner.
-
-## Demo accounts (only if you imported `schema.sql`)
-
-| Role    | Email                | Password    |
-|---------|----------------------|-------------|
-| Admin   | admin@school.test    | admin123    |
-| Teacher | adams@school.test    | teacher123  |
-| Student | anna@school.test     | student123  |
-
-(Other teachers: baker@, cohen@ — same password. Other students:
-ben@, clara@, … — password `student123`.)
-
-**Before going live:** log in as admin → **Users**, create your real accounts,
-and deactivate or change the demo ones. Each new user gets a temporary password
-you set when creating them.
+### 5. Отворите
+Посетите сајт — појавиће се страница за пријаву.
 
 ---
 
-## What each role can do (Milestone 1)
+## Прво пријављивање (чиста инсталација)
 
-**Admin** — sees and manages everything: create/edit activities, assign one or
-more teachers to each activity, set capacity and schedule, review and approve/
-reject any application, manage all users.
+Ако сте увезли `schema-clean.sql`, пријавите се са:
 
-**Teacher** — sees only their assigned activities; edits their details, sets the
-schedule and the maximum student count, reviews applications and approves/rejects
-them (capacity is enforced), sees enrolled students, and posts notifications.
+- **Имејл:** admin@admin.com
+- **Лозинка:** admin123
 
-**Student** — browses open activities, applies (one application per activity),
-tracks application status, sees a "My Extracurricular Activities" page, and reads
-a single notifications feed from all activities they're enrolled in.
+Одмах ћете морати да поставите нову лозинку. Затим отворите **Корисници** и
+направите праве налоге наставника и ученика. Свако може касније да промени своју
+лозинку преко везе **Лозинка** у горњем десном углу.
 
 ---
 
-## Notes
+## Шта која улога може (Фаза 1)
 
-- Passwords are stored hashed (bcrypt). All database access uses prepared
-  statements; all forms are CSRF-protected; pages are guarded by role on the
-  server side.
-- All links are relative, so the app works whether it sits at the domain root
-  or in a subfolder.
-- If you ever get a `500` error right after uploading, your host may use an
-  older Apache. Open `.htaccess` and replace each `Require all denied` line with
-  `Deny from all`, then retry.
+**Администратор** — види и мења све: креира/уређује активности, додељује једног
+или више наставника свакој активности, поставља капацитет и распоред, одобрава/
+одбија све пријаве, управља корисницима.
 
-## Coming next (milestones 2 & 3)
-- **Attendance**: per-session attendance taking (fast "mark all present" +
-  exceptions), with flexible dates driven by when the teacher records them.
-- **Reports** with Excel (.xlsx) and PDF export: student list per activity,
-  number of sessions, the student × date attendance matrix, and the end-of-year
-  summary with per-student attendance counts and percentages.
+**Наставник** — види само активности којима је додељен; уређује њихове детаље,
+поставља распоред и максималан број ученика, прегледа пријаве и одобрава/одбија их
+(капацитет се поштује), види уписане ученике и објављује обавештења.
+
+**Ученик** — прегледа отворене активности, пријављује се (једна пријава по
+активности), прати статус пријаве, има страницу „Моје ваннаставне активности“ и
+обједињени списак обавештења из активности у које је уписан.
+
+---
+
+## Напомене
+
+- Лозинке се чувају хеширане (bcrypt). Сав приступ бази иде преко припремљених
+  упита; све форме су заштићене CSRF токеном; странице су заштићене по улози на
+  серверу.
+- Све везе су релативне, па апликација ради и у корену домена и у подфолдеру.
+- Ако одмах после отпремања добијете грешку `500`, ваш хост можда користи старији
+  Apache. У `.htaccess` замените `Require all denied` са `Deny from all`.
+- Фајлови су у UTF-8 и базу постављају као utf8mb4, па се ћирилица исправно чува
+  и приказује. Увоз радите преко phpMyAdmin (исправно препознаје UTF-8).
