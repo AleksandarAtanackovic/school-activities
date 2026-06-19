@@ -23,6 +23,7 @@ CREATE TABLE users (
   role        ENUM('admin','teacher','student') NOT NULL,
   grade_class VARCHAR(40) DEFAULT NULL,        -- e.g. "10-A" (used for students)
   active      TINYINT(1) NOT NULL DEFAULT 1,
+  must_change_password TINYINT(1) NOT NULL DEFAULT 0,
   created_at  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 

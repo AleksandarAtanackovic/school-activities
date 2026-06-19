@@ -30,6 +30,7 @@ $pt = $page_title ?? APP_NAME;
   </nav>
   <div class="userbox">
     <span class="uname"><?= e($u['name']) ?> <span class="role"><?= e($u['role']) ?></span></span>
+    <a class="btn btn-ghost" href="change_password.php">Password</a>
     <a class="btn btn-ghost" href="logout.php">Log out</a>
   </div>
   <?php endif; ?>

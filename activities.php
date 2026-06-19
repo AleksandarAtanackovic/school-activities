@@ -57,11 +57,13 @@ include __DIR__ . '/includes/header.php';
     <?php if (is_student($u)): ?>
       <td><?= $a['my_status'] ? status_badge($a['my_status']) : '<span class="muted">—</span>' ?></td>
     <?php endif; ?>
-    <td class="right row-actions" style="justify-content:flex-end">
-      <a class="btn btn-sm btn-ghost" href="activity_view.php?id=<?= (int)$a['id'] ?>">View</a>
-      <?php if (can_manage_activity($u, (int)$a['id'])): ?>
-        <a class="btn btn-sm" href="activity_edit.php?id=<?= (int)$a['id'] ?>">Edit</a>
-      <?php endif; ?>
+    <td class="right">
+      <div class="row-actions" style="justify-content:flex-end">
+        <a class="btn btn-sm btn-ghost" href="activity_view.php?id=<?= (int)$a['id'] ?>">View</a>
+        <?php if (can_manage_activity($u, (int)$a['id'])): ?>
+          <a class="btn btn-sm" href="activity_edit.php?id=<?= (int)$a['id'] ?>">Edit</a>
+        <?php endif; ?>
+      </div>
     </td>
   </tr>
   <?php endforeach; ?>

@@ -23,6 +23,11 @@ function current_user(): ?array {
 function require_login(): array {
     $u = current_user();
     if (!$u) redirect('login.php');
+    // Force a password change on first login (e.g. the seeded admin account).
+    $script = basename($_SERVER['SCRIPT_NAME'] ?? '');
+    if (!empty($u['must_change_password']) && !in_array($script, ['change_password.php', 'logout.php'], true)) {
+        redirect('change_password.php');
+    }
     return $u;
 }
 

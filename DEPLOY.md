@@ -35,11 +35,16 @@ In cPanel → **MySQL Databases**:
 3. Add that user to the database and grant **ALL PRIVILEGES**.
 Write down the final database name, user name, and password.
 
-### 2. Import the tables + sample data
+### 2. Import the tables
 In cPanel → **phpMyAdmin**:
 1. Select your new database in the left sidebar.
-2. Open the **Import** tab → choose `schema.sql` → **Go**.
-You should see the tables created and sample data inserted.
+2. Open the **Import** tab.
+3. Choose your SQL file → **Go**:
+   - **`schema-clean.sql`** — for the real site: all tables, **no sample data**,
+     and a single admin account (`admin@admin.com` / `admin123`) that is forced
+     to set a new password on first login. **Use this one for production.**
+   - **`schema.sql`** — the demo dataset (sample users, activities, applications)
+     for trying things out. Don't use this on the live site.
 
 ### 3. Upload the files
 In cPanel → **File Manager** (or FTP):
@@ -63,7 +68,19 @@ Visit your site. You'll land on the login screen.
 
 ---
 
-## Demo accounts (from the seed data)
+## First login (clean install)
+
+If you imported `schema-clean.sql`, log in with:
+
+- **Email:** admin@admin.com
+- **Password:** admin123
+
+You'll immediately be required to choose a new password. After that, open
+**Users** to create your real teacher and student accounts. Each new user gets a
+temporary password you set when creating them; they can change it any time from
+the **Password** link in the top-right corner.
+
+## Demo accounts (only if you imported `schema.sql`)
 
 | Role    | Email                | Password    |
 |---------|----------------------|-------------|
