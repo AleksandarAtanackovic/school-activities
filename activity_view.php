@@ -28,7 +28,7 @@ $tt->execute([$id]);
 $teachers = array_column($tt->fetchAll(), 'name');
 
 // enrolled members
-$em = db()->prepare("SELECT u.name,u.grade_class FROM applications ap JOIN users u ON u.id=ap.student_id
+$em = db()->prepare("SELECT u.name,u.grade_class,u.maticni_broj FROM applications ap JOIN users u ON u.id=ap.student_id
                      WHERE ap.activity_id=? AND ap.status='approved' ORDER BY u.name");
 $em->execute([$id]);
 $members = $em->fetchAll();
@@ -90,8 +90,8 @@ include __DIR__ . '/includes/header.php';
 <?php if ($manages): ?>
 <h2>Уписани ученици (<?= $enrolled ?>)</h2>
 <?php if (!$members): ?><div class="card muted">Још нема уписаних ученика.</div><?php else: ?>
-<table><tr><th>Ученик</th><th>Разред</th></tr>
-<?php foreach ($members as $m): ?><tr><td><?= e($m['name']) ?></td><td class="muted"><?= e($m['grade_class'] ?: '—') ?></td></tr><?php endforeach; ?>
+<table><tr><th>Ученик</th><th>Матични број</th><th>Разред</th></tr>
+<?php foreach ($members as $m): ?><tr><td><?= e($m['name']) ?></td><td class="muted"><?= e($m['maticni_broj'] ?: '—') ?></td><td class="muted"><?= e($m['grade_class'] ?: '—') ?></td></tr><?php endforeach; ?>
 </table>
 <?php endif; ?>
 <?php endif; ?>

@@ -5,17 +5,17 @@ if (current_user()) redirect('dashboard.php');
 $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     csrf_check();
-    $email = trim($_POST['email'] ?? '');
+    $username = trim($_POST['username'] ?? '');
     $pass  = $_POST['password'] ?? '';
-    $st = db()->prepare('SELECT * FROM users WHERE email=? AND active=1');
-    $st->execute([$email]);
+    $st = db()->prepare('SELECT * FROM users WHERE username=? AND active=1');
+    $st->execute([$username]);
     $user = $st->fetch();
     if ($user && password_verify($pass, $user['password'])) {
         session_regenerate_id(true);
         $_SESSION['uid'] = $user['id'];
         redirect('dashboard.php');
     }
-    $error = 'Погрешан имејл или лозинка.';
+    $error = 'Погрешно корисничко име или лозинка.';
 }
 ?><!DOCTYPE html>
 <html lang="sr"><head>
@@ -30,8 +30,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php if ($error): ?><div class="err"><?= e($error) ?></div><?php endif; ?>
     <form method="post">
       <?= csrf_field() ?>
-      <label>Имејл</label>
-      <input type="email" name="email" required autofocus value="<?= e($_POST['email'] ?? '') ?>">
+      <label>Корисничко име</label>
+      <input type="text" name="username" required autofocus value="<?= e($_POST['username'] ?? '') ?>">
       <label>Лозинка</label>
       <input type="password" name="password" required>
       <div style="margin-top:18px"><button class="btn" style="width:100%">Пријава</button></div>

@@ -20,15 +20,15 @@
 
 ### Демо налози (из `schema.sql`)
 
-| Улога        | Имејл              | Лозинка    | Напомена |
+| Улога        | Корисничко име     | Лозинка    | Напомена |
 |--------------|--------------------|------------|----------|
-| Администратор| admin@school.test  | admin123   | види све |
-| Наставник    | adams@school.test  | teacher123 | Математичка секција + Роботика |
-| Наставник    | baker@school.test  | teacher123 | Драмска секција + Хор |
-| Наставник    | cohen@school.test  | teacher123 | су-наставник Роботике |
-| Ученик       | anna@school.test   | student123 | уписана у Математичку; на чекању Драмска |
-| Ученик       | ben@school.test    | student123 | уписан у Математичку |
-| Ученици      | …→ jack@school.test | student123 | (anna, ben, clara, david, ella, felix, gina, hugo, iris, jack) |
+| Администратор| admin  | admin123   | види све |
+| Наставник    | mmarkovic  | teacher123 | Математичка секција + Роботика |
+| Наставник    | jjovanovic  | teacher123 | Драмска секција + Хор |
+| Наставник    | ppetrovic  | teacher123 | су-наставник Роботике |
+| Ученик       | anovak   | student123 | уписана у Математичку; на чекању Драмска |
+| Ученик       | bkostic    | student123 | уписан у Математичку |
+| Ученици      | anovak … jkim | student123 | (anna, ben, clara, david, ella, felix, gina, hugo, iris, jack) |
 
 ### Ресетовање података
 Кад год желите чист почетак, поново увезите `schema.sql` у phpMyAdmin (изаберите
@@ -39,7 +39,7 @@
 ## 1. Брза провера (5 минута)
 
 1. Отворите `http://localhost/extra` → треба да вас преусмери на **пријаву**.
-2. Пријавите се као **admin@school.test / admin123** → стижете на **Почетну** са
+2. Пријавите се као **admin / admin123** → стижете на **Почетну** са
    четири картице (Активности, Ученици, Наставници, Пријаве на чекању).
 3. Кликните **Активности** → видите четири активности, без преломљених линија код
    дугмади Прикажи/Измени *(то је био пријављени баг — потврдите да је нестао).*
@@ -48,43 +48,50 @@
 
 ---
 
-## 2. (Опционо) Додајте више ученика за дуже спискове
+## 2. Уношење више ученика (две опције)
 
-Да бисте видели како се понашају дужи спискови и капацитет, додајте 20 ученика
-одједном. У phpMyAdmin → ваша база → картица **SQL**, налепите и покрените:
+У пракси ћеш имати стотине ученика. Имаш два начина:
+
+**(А) Масовни увоз кроз апликацију — препоручено.** Пријави се као админ →
+**Корисници** → дугме **„Масовни увоз ученика“**. Налепи листу (директно из
+Excel-а/Google табеле или ручно), један ученик по реду, колоне раздвојене табом,
+тачка-зарезом или зарезом:
+
+```
+Име и презиме ; корисничко име ; матични број ; разред
+```
+
+Обавезни су само име и корисничко име; ако изоставиш корисничко име, користи се
+матични број. Поставиш једну почетну лозинку за све — сви увезени ученици је
+добијају и морају да је промене при првом пријављивању. Дупликати (исто корисничко
+име или матични број) се прескачу уз извештај, без рушења увоза.
+
+Пример који можеш да налепиш:
+
+```
+Милан Симић;msimic;5000001;9-А
+Јована Тодоровић;jtodorovic;5000002;9-А
+Николина Раић;;5000003;9-Б
+```
+
+**(Б) Директно у бази (SQL).** Ако радиш кроз phpMyAdmin → картица **SQL**. Обрати
+пажњу на нове колоне `username` и `maticni_broj`, и постави `must_change_password=1`.
+Хеш испод одговара лозинки **student123** (сви се пријављују истом почетном лозинком):
 
 ```sql
 SET NAMES utf8mb4;
-INSERT INTO users (name, email, password, role, grade_class) VALUES
-('Тест Ученик 01','s01@school.test','$2y$10$oH7T6OSEvYIxhhna58UJ1OoCJsj/wbtur2agtPvwFiVoEbHTCBcKC','student','9-А'),
-('Тест Ученик 02','s02@school.test','$2y$10$oH7T6OSEvYIxhhna58UJ1OoCJsj/wbtur2agtPvwFiVoEbHTCBcKC','student','9-А'),
-('Тест Ученик 03','s03@school.test','$2y$10$oH7T6OSEvYIxhhna58UJ1OoCJsj/wbtur2agtPvwFiVoEbHTCBcKC','student','9-А'),
-('Тест Ученик 04','s04@school.test','$2y$10$oH7T6OSEvYIxhhna58UJ1OoCJsj/wbtur2agtPvwFiVoEbHTCBcKC','student','9-Б'),
-('Тест Ученик 05','s05@school.test','$2y$10$oH7T6OSEvYIxhhna58UJ1OoCJsj/wbtur2agtPvwFiVoEbHTCBcKC','student','9-Б'),
-('Тест Ученик 06','s06@school.test','$2y$10$oH7T6OSEvYIxhhna58UJ1OoCJsj/wbtur2agtPvwFiVoEbHTCBcKC','student','9-Б'),
-('Тест Ученик 07','s07@school.test','$2y$10$oH7T6OSEvYIxhhna58UJ1OoCJsj/wbtur2agtPvwFiVoEbHTCBcKC','student','9-В'),
-('Тест Ученик 08','s08@school.test','$2y$10$oH7T6OSEvYIxhhna58UJ1OoCJsj/wbtur2agtPvwFiVoEbHTCBcKC','student','9-В'),
-('Тест Ученик 09','s09@school.test','$2y$10$oH7T6OSEvYIxhhna58UJ1OoCJsj/wbtur2agtPvwFiVoEbHTCBcKC','student','9-В'),
-('Тест Ученик 10','s10@school.test','$2y$10$oH7T6OSEvYIxhhna58UJ1OoCJsj/wbtur2agtPvwFiVoEbHTCBcKC','student','10-В'),
-('Тест Ученик 11','s11@school.test','$2y$10$oH7T6OSEvYIxhhna58UJ1OoCJsj/wbtur2agtPvwFiVoEbHTCBcKC','student','10-В'),
-('Тест Ученик 12','s12@school.test','$2y$10$oH7T6OSEvYIxhhna58UJ1OoCJsj/wbtur2agtPvwFiVoEbHTCBcKC','student','10-В'),
-('Тест Ученик 13','s13@school.test','$2y$10$oH7T6OSEvYIxhhna58UJ1OoCJsj/wbtur2agtPvwFiVoEbHTCBcKC','student','11-В'),
-('Тест Ученик 14','s14@school.test','$2y$10$oH7T6OSEvYIxhhna58UJ1OoCJsj/wbtur2agtPvwFiVoEbHTCBcKC','student','11-В'),
-('Тест Ученик 15','s15@school.test','$2y$10$oH7T6OSEvYIxhhna58UJ1OoCJsj/wbtur2agtPvwFiVoEbHTCBcKC','student','11-В'),
-('Тест Ученик 16','s16@school.test','$2y$10$oH7T6OSEvYIxhhna58UJ1OoCJsj/wbtur2agtPvwFiVoEbHTCBcKC','student','12-В'),
-('Тест Ученик 17','s17@school.test','$2y$10$oH7T6OSEvYIxhhna58UJ1OoCJsj/wbtur2agtPvwFiVoEbHTCBcKC','student','12-В'),
-('Тест Ученик 18','s18@school.test','$2y$10$oH7T6OSEvYIxhhna58UJ1OoCJsj/wbtur2agtPvwFiVoEbHTCBcKC','student','12-В'),
-('Тест Ученик 19','s19@school.test','$2y$10$oH7T6OSEvYIxhhna58UJ1OoCJsj/wbtur2agtPvwFiVoEbHTCBcKC','student','12-Г'),
-('Тест Ученик 20','s20@school.test','$2y$10$oH7T6OSEvYIxhhna58UJ1OoCJsj/wbtur2agtPvwFiVoEbHTCBcKC','student','12-Г');
+INSERT INTO users (name, username, maticni_broj, password, role, grade_class, must_change_password) VALUES
+('Тест Ученик 01','t01','6000001','$2y$10$oH7T6OSEvYIxhhna58UJ1OoCJsj/wbtur2agtPvwFiVoEbHTCBcKC','student','9-А',1),
+('Тест Ученик 02','t02','6000002','$2y$10$oH7T6OSEvYIxhhna58UJ1OoCJsj/wbtur2agtPvwFiVoEbHTCBcKC','student','9-А',1),
+('Тест Ученик 03','t03','6000003','$2y$10$oH7T6OSEvYIxhhna58UJ1OoCJsj/wbtur2agtPvwFiVoEbHTCBcKC','student','9-Б',1);
 ```
 
-Сви се пријављују лозинком **student123** (нпр. s05@school.test / student123).
-
----
+(За више ученика само додај редове по истом обрасцу, са јединственим `username` и
+`maticni_broj`.)
 
 ## 3. Тестови за администратора
 
-Пријавите се као **admin@school.test**.
+Пријавите се као **admin**.
 
 **Креирање активности**
 1. Активности → **+ Нова активност**.
@@ -100,7 +107,7 @@ INSERT INTO users (name, email, password, role, grade_class) VALUES
 
 **Креирање корисника**
 1. **Корисници** → попуните форму → направите једног **наставника** и једног
-   **ученика** (ученику дајте разред нпр. „10-А“). Лозинка мин. 6 знакова.
+   **ученика** (обоје ће при првом пријављивању морати да промене лозинку) (ученику дајте разред нпр. „10-А“). Лозинка мин. 6 знакова.
 2. ✅ Појављују се у списку. Покушајте исти имејл двапут → очекујте грешку.
 3. Лозинка краћа од 6 знакова → очекујте грешку.
 
@@ -121,7 +128,7 @@ INSERT INTO users (name, email, password, role, grade_class) VALUES
 
 ## 4. Тестови за наставника
 
-Пријавите се као **adams@school.test** (Математичка секција + Роботика).
+Пријавите се као **mmarkovic** (Математичка секција + Роботика).
 
 1. **Почетна/Активности** → видите **само** своје две активности. ✅
 2. Отворите **Математичку** → **Измени** → промените распоред и **максималан број
@@ -140,7 +147,7 @@ INSERT INTO users (name, email, password, role, grade_class) VALUES
 
 ## 5. Тестови за ученика
 
-Пријавите се као **anna@school.test** (идеално у другом прозору).
+Пријавите се као **anovak** (идеално у другом прозору).
 
 1. **Активности** → видите отворене активности, колону **Мој статус**, капацитет и
    ознаку „Попуњено“ где треба. Где не можете да се пријавите нема дугмета.
@@ -158,7 +165,7 @@ INSERT INTO users (name, email, password, role, grade_class) VALUES
 
 ## 6. Пријава и налог (све улоге)
 
-1. **Погрешна лозинка:** на пријави тачан имејл + погрешна лозинка → „Погрешан
+1. **Погрешна лозинка:** на пријави тачно корисничко име + погрешна лозинка → „Погрешан
    имејл или лозинка.“
 2. **Промена лозинке:** док сте пријављени, кликните **Лозинка** (горе десно) →
    тренутна + нова двапут → мења се. Одјавите се и пријавите новом лозинком; стара

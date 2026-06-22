@@ -3,7 +3,6 @@
 -- Увезите овај фајл једном преко phpMyAdmin (картица „Увоз“).
 -- Може се поново покренути: брише и поново креира табеле.
 -- =====================================================================
-
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 DROP TABLE IF EXISTS attendance;
@@ -18,7 +17,8 @@ SET FOREIGN_KEY_CHECKS = 1;
 CREATE TABLE users (
   id          INT AUTO_INCREMENT PRIMARY KEY,
   name        VARCHAR(120) NOT NULL,
-  email       VARCHAR(190) NOT NULL UNIQUE,
+  username    VARCHAR(60)  NOT NULL UNIQUE,
+  maticni_broj VARCHAR(20) DEFAULT NULL UNIQUE,
   password    VARCHAR(255) NOT NULL,
   role        ENUM('admin','teacher','student') NOT NULL,
   grade_class VARCHAR(40) DEFAULT NULL,
@@ -100,24 +100,24 @@ CREATE TABLE attendance (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- =====================================================================
--- ДЕМО ПОДАЦИ
+-- ДЕМО ПОДАЦИ  (пријава: корисничко име + лозинка)
 -- Лозинке: админ=admin123  наставник=teacher123  ученик=student123
 -- =====================================================================
-INSERT INTO users (id, name, email, password, role, grade_class) VALUES
-(1,'Администратор школе','admin@school.test','$2y$10$LAHHDhNto2hs5oK3xtIi/.lDqbWXq8n.ZFgb06HiMfgKJcekGOXje','admin',NULL),
-(2,'Марко Марковић','adams@school.test','$2y$10$2jOCPb6kxH2OtxJj1XY.Mef2x03FR6G588o0cnnfR5XhAHPlZjQRu','teacher',NULL),
-(3,'Јелена Јовановић','baker@school.test','$2y$10$2jOCPb6kxH2OtxJj1XY.Mef2x03FR6G588o0cnnfR5XhAHPlZjQRu','teacher',NULL),
-(4,'Петар Петровић','cohen@school.test','$2y$10$2jOCPb6kxH2OtxJj1XY.Mef2x03FR6G588o0cnnfR5XhAHPlZjQRu','teacher',NULL),
-(10,'Ана Новак','anna@school.test','$2y$10$oH7T6OSEvYIxhhna58UJ1OoCJsj/wbtur2agtPvwFiVoEbHTCBcKC','student','10-А'),
-(11,'Бранко Костић','ben@school.test','$2y$10$oH7T6OSEvYIxhhna58UJ1OoCJsj/wbtur2agtPvwFiVoEbHTCBcKC','student','10-А'),
-(12,'Клара Ђурић','clara@school.test','$2y$10$oH7T6OSEvYIxhhna58UJ1OoCJsj/wbtur2agtPvwFiVoEbHTCBcKC','student','10-Б'),
-(13,'Давид Илић','david@school.test','$2y$10$oH7T6OSEvYIxhhna58UJ1OoCJsj/wbtur2agtPvwFiVoEbHTCBcKC','student','10-Б'),
-(14,'Ена Лазић','ella@school.test','$2y$10$oH7T6OSEvYIxhhna58UJ1OoCJsj/wbtur2agtPvwFiVoEbHTCBcKC','student','11-А'),
-(15,'Филип Гајић','felix@school.test','$2y$10$oH7T6OSEvYIxhhna58UJ1OoCJsj/wbtur2agtPvwFiVoEbHTCBcKC','student','11-А'),
-(16,'Гина Хорват','gina@school.test','$2y$10$oH7T6OSEvYIxhhna58UJ1OoCJsj/wbtur2agtPvwFiVoEbHTCBcKC','student','11-Б'),
-(17,'Хуго Ивановић','hugo@school.test','$2y$10$oH7T6OSEvYIxhhna58UJ1OoCJsj/wbtur2agtPvwFiVoEbHTCBcKC','student','11-Б'),
-(18,'Ирис Јовић','iris@school.test','$2y$10$oH7T6OSEvYIxhhna58UJ1OoCJsj/wbtur2agtPvwFiVoEbHTCBcKC','student','12-А'),
-(19,'Јакша Ким','jack@school.test','$2y$10$oH7T6OSEvYIxhhna58UJ1OoCJsj/wbtur2agtPvwFiVoEbHTCBcKC','student','12-А');
+INSERT INTO users (id, name, username, maticni_broj, password, role, grade_class) VALUES
+(1,'Администратор школе','admin',NULL,'$2y$10$LAHHDhNto2hs5oK3xtIi/.lDqbWXq8n.ZFgb06HiMfgKJcekGOXje','admin',NULL),
+(2,'Марко Марковић','mmarkovic',NULL,'$2y$10$2jOCPb6kxH2OtxJj1XY.Mef2x03FR6G588o0cnnfR5XhAHPlZjQRu','teacher',NULL),
+(3,'Јелена Јовановић','jjovanovic',NULL,'$2y$10$2jOCPb6kxH2OtxJj1XY.Mef2x03FR6G588o0cnnfR5XhAHPlZjQRu','teacher',NULL),
+(4,'Петар Петровић','ppetrovic',NULL,'$2y$10$2jOCPb6kxH2OtxJj1XY.Mef2x03FR6G588o0cnnfR5XhAHPlZjQRu','teacher',NULL),
+(10,'Ана Новак','anovak','2024001','$2y$10$oH7T6OSEvYIxhhna58UJ1OoCJsj/wbtur2agtPvwFiVoEbHTCBcKC','student','10-А'),
+(11,'Бранко Костић','bkostic','2024002','$2y$10$oH7T6OSEvYIxhhna58UJ1OoCJsj/wbtur2agtPvwFiVoEbHTCBcKC','student','10-А'),
+(12,'Клара Ђурић','cdjuric','2024003','$2y$10$oH7T6OSEvYIxhhna58UJ1OoCJsj/wbtur2agtPvwFiVoEbHTCBcKC','student','10-Б'),
+(13,'Давид Илић','dilic','2024004','$2y$10$oH7T6OSEvYIxhhna58UJ1OoCJsj/wbtur2agtPvwFiVoEbHTCBcKC','student','10-Б'),
+(14,'Ена Лазић','elazic','2024005','$2y$10$oH7T6OSEvYIxhhna58UJ1OoCJsj/wbtur2agtPvwFiVoEbHTCBcKC','student','11-А'),
+(15,'Филип Гајић','fgajic','2024006','$2y$10$oH7T6OSEvYIxhhna58UJ1OoCJsj/wbtur2agtPvwFiVoEbHTCBcKC','student','11-А'),
+(16,'Гина Хорват','ghorvat','2024007','$2y$10$oH7T6OSEvYIxhhna58UJ1OoCJsj/wbtur2agtPvwFiVoEbHTCBcKC','student','11-Б'),
+(17,'Хуго Ивановић','hivanovic','2024008','$2y$10$oH7T6OSEvYIxhhna58UJ1OoCJsj/wbtur2agtPvwFiVoEbHTCBcKC','student','11-Б'),
+(18,'Ирис Јовић','ijovic','2024009','$2y$10$oH7T6OSEvYIxhhna58UJ1OoCJsj/wbtur2agtPvwFiVoEbHTCBcKC','student','12-А'),
+(19,'Јакша Ким','jkim','2024010','$2y$10$oH7T6OSEvYIxhhna58UJ1OoCJsj/wbtur2agtPvwFiVoEbHTCBcKC','student','12-А');
 
 INSERT INTO activities (id, name, description, location, schedule_text, max_students, status, created_by) VALUES
 (1,'Математичка секција','Такмичарска математика и решавање задатака.','Учионица 204','четвртком 15:00',6,'open',1),
@@ -125,7 +125,6 @@ INSERT INTO activities (id, name, description, location, schedule_text, max_stud
 (3,'Роботика','Прављење и програмирање робота за регионално такмичење.','Лабораторија Б','средом 15:30',8,'open',1),
 (4,'Хор','Школски хор, пробе и концерти.','Музички кабинет','петком 14:00',20,'open',1);
 
--- доделе наставника (активност 3 има два наставника; наставник 2 има две активности)
 INSERT INTO activity_teachers (activity_id, teacher_id) VALUES
 (1,2),(2,3),(3,2),(3,4),(4,3);
 

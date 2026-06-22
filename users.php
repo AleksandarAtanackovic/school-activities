@@ -9,20 +9,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
     if ($action === 'create') {
         $name = trim($_POST['name'] ?? '');
-        $email = trim($_POST['email'] ?? '');
+        $username = trim($_POST['username'] ?? '');
         $role = in_array($_POST['role'] ?? '', ['admin','teacher','student'], true) ? $_POST['role'] : 'student';
         $grade = trim($_POST['grade_class'] ?? '');
+        $maticni = trim($_POST['maticni_broj'] ?? '');
         $pass = $_POST['password'] ?? '';
-        if ($name==='' || $email==='' || strlen($pass) < 6) {
-            $error = 'Име, имејл и лозинка од најмање 6 карактера су обавезни.';
+        if ($name==='' || $username==='' || strlen($pass) < 6) {
+            $error = 'Име, корисничко име и лозинка од најмање 6 карактера су обавезни.';
         } else {
-            $chk = db()->prepare("SELECT 1 FROM users WHERE email=?"); $chk->execute([$email]);
+            $chk = db()->prepare("SELECT 1 FROM users WHERE username=?"); $chk->execute([$username]);
             if ($chk->fetchColumn()) {
-                $error = 'Корисник са тим имејлом већ постоји.';
-            } else {
-                db()->prepare("INSERT INTO users (name,email,password,role,grade_class) VALUES (?,?,?,?,?)")
-                    ->execute([$name,$email,password_hash($pass,PASSWORD_DEFAULT),$role,$role==='student'?$grade:null]);
-                flash('Корисник је креиран.');
+                $error = 'Корисник са тим корисничким именом већ постоји.';
+            } elseif ($role==='student' && $maticni!=='') {
+                $cm = db()->prepare("SELECT 1 FROM users WHERE maticni_broj=?"); $cm->execute([$maticni]);
+                if ($cm->fetchColumn()) { $error = 'Ученик са тим матичним бројем већ постоји.'; }
+            }
+            if ($error === '') {
+                // New accounts must set their own password on first login.
+                db()->prepare("INSERT INTO users (name,username,maticni_broj,password,role,grade_class,must_change_password)
+                               VALUES (?,?,?,?,?,?,1)")
+                    ->execute([
+                        $name, $username,
+                        $role==='student' && $maticni!=='' ? $maticni : null,
+                        password_hash($pass, PASSWORD_DEFAULT),
+                        $role,
+                        $role==='student' ? $grade : null
+                    ]);
+                flash('Корисник је креиран. При првом пријављивању мора да промени лозинку.');
                 redirect('users.php');
             }
         }
@@ -39,8 +52,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $rows = db()->query("SELECT * FROM users ORDER BY FIELD(role,'admin','teacher','student'), name")->fetchAll();
 include __DIR__ . '/includes/header.php';
 ?>
-<h1>Корисници</h1>
-<p class="sub">Креирајте и управљајте налозима администратора, наставника и ученика.</p>
+<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+  <div><h1>Корисници</h1><p class="sub">Креирајте и управљајте налозима администратора, наставника и ученика.</p></div>
+  <a class="btn btn-ghost" href="import_students.php">Масовни увоз ученика</a>
+</div>
 
 <div class="card" style="max-width:640px">
   <h2 style="margin-top:0">Додавање корисника</h2>
@@ -49,26 +64,29 @@ include __DIR__ . '/includes/header.php';
     <?= csrf_field() ?>
     <input type="hidden" name="action" value="create">
     <label>Име и презиме</label><input name="name" required>
-    <label>Имејл</label><input type="email" name="email" required>
+    <label>Корисничко име (за пријаву)</label><input name="username" required>
     <label>Улога</label>
     <select name="role">
       <option value="student">Ученик</option>
       <option value="teacher">Наставник</option>
       <option value="admin">Администратор</option>
     </select>
+    <label>Матични број (само за ученике)</label><input name="maticni_broj">
     <label>Разред (само за ученике, нпр. 10-А)</label><input name="grade_class">
     <label>Привремена лозинка (мин. 6 карактера)</label><input type="text" name="password" required>
-    <div style="margin-top:16px"><button class="btn">Креирај корисника</button></div>
+    <p class="muted" style="font-size:13px;margin-top:8px">Корисник ће при првом пријављивању морати да промени ову лозинку.</p>
+    <div style="margin-top:8px"><button class="btn">Креирај корисника</button></div>
   </form>
 </div>
 
 <h2>Сви корисници</h2>
 <table>
-  <tr><th>Име</th><th>Имејл</th><th>Улога</th><th>Разред</th><th>Статус</th><th class="right">Радња</th></tr>
+  <tr><th>Име</th><th>Корисничко име</th><th>Матични број</th><th>Улога</th><th>Разред</th><th>Статус</th><th class="right">Радња</th></tr>
   <?php foreach ($rows as $r): ?>
   <tr>
     <td><?= e($r['name']) ?></td>
-    <td class="muted"><?= e($r['email']) ?></td>
+    <td class="muted"><?= e($r['username']) ?></td>
+    <td class="muted"><?= e($r['maticni_broj'] ?: '—') ?></td>
     <td><?= e(role_label($r['role'])) ?></td>
     <td class="muted"><?= e($r['grade_class'] ?: '—') ?></td>
     <td><?= $r['active'] ? '<span class="badge badge-approved">Активан</span>' : '<span class="badge badge-rejected">Неактиван</span>' ?></td>

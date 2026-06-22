@@ -1,12 +1,11 @@
 -- =====================================================================
--- Extracurricular Activity Tracker - CLEAN / PRODUCTION schema
--- Use THIS file (instead of schema.sql) for your real cPanel install.
--- It creates all tables with NO sample data, plus a single admin account:
---     login:    admin@admin.com
---     password: admin123
--- The admin is forced to set a new password on first login.
+-- Праћење ваннаставних активности — ЧИСТА / ПРОДУКЦИОНА шема
+-- Користите ОВАЈ фајл (уместо schema.sql) за прави cPanel.
+-- Прави све табеле БЕЗ демо података, плус један админ налог:
+--     корисничко име: admin
+--     лозинка:        admin123
+-- Админ мора да промени лозинку при првом пријављивању.
 -- =====================================================================
-
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 DROP TABLE IF EXISTS attendance;
@@ -21,7 +20,8 @@ SET FOREIGN_KEY_CHECKS = 1;
 CREATE TABLE users (
   id          INT AUTO_INCREMENT PRIMARY KEY,
   name        VARCHAR(120) NOT NULL,
-  email       VARCHAR(190) NOT NULL UNIQUE,
+  username    VARCHAR(60)  NOT NULL UNIQUE,
+  maticni_broj VARCHAR(20) DEFAULT NULL UNIQUE,
   password    VARCHAR(255) NOT NULL,
   role        ENUM('admin','teacher','student') NOT NULL,
   grade_class VARCHAR(40) DEFAULT NULL,
@@ -102,7 +102,7 @@ CREATE TABLE attendance (
   CONSTRAINT fk_att_recorder FOREIGN KEY (recorded_by) REFERENCES users(id)  ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- The only seeded row: one admin, forced to change password on first login.
--- Password hash below corresponds to "admin123".
-INSERT INTO users (name, email, password, role, must_change_password) VALUES
-('Администратор','admin@admin.com','$2y$10$LAHHDhNto2hs5oK3xtIi/.lDqbWXq8n.ZFgb06HiMfgKJcekGOXje','admin',1);
+-- Једини унос: админ, мора да промени лозинку при првом пријављивању.
+-- Хеш одговара лозинки "admin123".
+INSERT INTO users (name, username, password, role, must_change_password) VALUES
+('Администратор','admin','$2y$10$LAHHDhNto2hs5oK3xtIi/.lDqbWXq8n.ZFgb06HiMfgKJcekGOXje','admin',1);
