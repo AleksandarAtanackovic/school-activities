@@ -6,7 +6,7 @@ $id = (int)($_GET['id'] ?? 0);
 $st = db()->prepare("SELECT * FROM activities WHERE id=?");
 $st->execute([$id]);
 $a = $st->fetch();
-if (!$a) { http_response_code(404); die('Активност није пронађена.'); }
+if (!$a) { http_response_code(404); die('Секција није пронађена.'); }
 
 $manages = can_manage_activity($u, $id);
 
@@ -74,14 +74,14 @@ include __DIR__ . '/includes/header.php';
     <?php if ($myStatus): ?>
       <p>Ваша пријава: <?= status_badge($myStatus) ?></p>
     <?php elseif ($a['status']!=='open'): ?>
-      <p class="muted">Ова активност није отворена за пријаве.</p>
+      <p class="muted">Ова секција није отворена за пријаве.</p>
     <?php elseif ($full): ?>
-      <p class="muted">Ова активност је попуњена.</p>
+      <p class="muted">Ова секција је попуњена.</p>
     <?php else: ?>
       <form method="post" action="apply.php" class="inline">
         <?= csrf_field() ?>
         <input type="hidden" name="activity_id" value="<?= $id ?>">
-        <button class="btn">Пријави се на ову активност</button>
+        <button class="btn">Пријави се на ову секцију</button>
       </form>
     <?php endif; ?>
   <?php endif; ?>

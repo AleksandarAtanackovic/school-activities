@@ -7,7 +7,7 @@ $editing = $id > 0;
 
 // Permission: teachers can only edit activities they own; only admins create new ones.
 if ($editing && !can_manage_activity($u, $id)) { http_response_code(403); die('Приступ одбијен.'); }
-if (!$editing && !is_admin($u)) { http_response_code(403); die('Само администратори могу да креирају активности.'); }
+if (!$editing && !is_admin($u)) { http_response_code(403); die('Само администратори могу да креирају секције.'); }
 
 $activity = ['name'=>'','description'=>'','location'=>'','schedule_text'=>'','max_students'=>20,'status'=>'open'];
 $assigned = [];
@@ -15,7 +15,7 @@ if ($editing) {
     $st = db()->prepare("SELECT * FROM activities WHERE id=?");
     $st->execute([$id]);
     $activity = $st->fetch();
-    if (!$activity) { http_response_code(404); die('Активност није пронађена.'); }
+    if (!$activity) { http_response_code(404); die('Секција није пронађена.'); }
     $st = db()->prepare("SELECT teacher_id FROM activity_teachers WHERE activity_id=?");
     $st->execute([$id]);
     $assigned = array_map('intval', array_column($st->fetchAll(), 'teacher_id'));
@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $picked = is_admin($u) ? array_map('intval', $_POST['teachers'] ?? []) : $assigned;
 
     if ($name === '') {
-        $error = 'Назив активности је обавезан.';
+        $error = 'Назив секције је обавезан.';
     } else {
         if ($editing) {
             $st = db()->prepare("UPDATE activities SET name=?, description=?, location=?, schedule_text=?, max_students=?, status=? WHERE id=?");
@@ -51,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $ins = db()->prepare("INSERT INTO activity_teachers (activity_id, teacher_id) VALUES (?,?)");
             foreach (array_unique($picked) as $tid) { $ins->execute([$id, $tid]); }
         }
-        flash('Активност је сачувана.');
+        flash('Секција је сачувана.');
         redirect('activity_view.php?id=' . $id);
     }
     // keep submitted values on error
@@ -61,11 +61,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $assigned = $picked;
 }
 
-$page_title = $editing ? 'Измена активности' : 'Нова активност';
+$page_title = $editing ? 'Измена секције' : 'Нова секција';
 include __DIR__ . '/includes/header.php';
 ?>
-<h1><?= $editing ? 'Измена активности' : 'Нова активност' ?></h1>
-<p class="sub"><a href="activities.php">&larr; Назад на активности</a></p>
+<h1><?= $editing ? 'Измена секције' : 'Нова секција' ?></h1>
+<p class="sub"><a href="activities.php">&larr; Назад на секције</a></p>
 
 <div class="card" style="max-width:640px">
   <?php if ($error): ?><div class="err"><?= e($error) ?></div><?php endif; ?>
@@ -89,7 +89,7 @@ include __DIR__ . '/includes/header.php';
     </select>
 
     <?php if (is_admin($u)): ?>
-      <label>Додељени наставници (једна активност може имати више)</label>
+      <label>Додељени наставници (једна секција може имати више)</label>
       <div style="border:1px solid var(--line);border-radius:8px;padding:10px 12px">
         <?php if (!$teachers): ?><span class="muted">Још нема наставника. Додајте их у одељку Корисници.</span><?php endif; ?>
         <?php foreach ($teachers as $t): ?>
@@ -103,7 +103,7 @@ include __DIR__ . '/includes/header.php';
       <p class="muted" style="margin-top:14px">Доделу наставника обавља администратор.</p>
     <?php endif; ?>
 
-    <div style="margin-top:18px"><button class="btn">Сачувај активност</button></div>
+    <div style="margin-top:18px"><button class="btn">Сачувај секцију</button></div>
   </form>
 </div>
 

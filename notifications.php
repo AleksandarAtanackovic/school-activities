@@ -18,7 +18,7 @@ $rows = $st->fetchAll();
 include __DIR__ . '/includes/header.php';
 ?>
 <h1>Обавештења</h1>
-<p class="sub">Обавештења из активности у које сте уписани.</p>
+<p class="sub">Обавештења из секција у које сте уписани.</p>
 
 <?php if (!$rows): ?>
   <div class="card muted">Још нема обавештења.</div>

@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/includes/auth.php';
 $u = require_login();
-$page_title = 'Активности';
+$page_title = 'Секције';
 
 if (is_admin($u)) {
     $rows = db()->query("SELECT a.*, (SELECT COUNT(*) FROM applications ap WHERE ap.activity_id=a.id AND ap.status='approved') AS enrolled
@@ -31,18 +31,18 @@ function teacher_names(int $activityId): string {
 include __DIR__ . '/includes/header.php';
 ?>
 <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
-  <div><h1>Активности</h1><p class="sub">
-    <?= is_student($u) ? 'Прегледајте активности и пријавите се.' : ($u['role']==='admin' ? 'Све активности у школи.' : 'Активности којима сте додељени.') ?>
+  <div><h1>Секције</h1><p class="sub">
+    <?= is_student($u) ? 'Прегледајте секције и пријавите се.' : ($u['role']==='admin' ? 'Све секције у школи.' : 'Секције којима сте додељени.') ?>
   </p></div>
-  <?php if (is_admin($u)): ?><a class="btn" href="activity_edit.php">+ Нова активност</a><?php endif; ?>
+  <?php if (is_admin($u)): ?><a class="btn" href="activity_edit.php">+ Нова секција</a><?php endif; ?>
 </div>
 
 <?php if (!$rows): ?>
-  <div class="card muted">Нема активности за приказ.</div>
+  <div class="card muted">Нема секција за приказ.</div>
 <?php else: ?>
 <table>
   <tr>
-    <th>Активност</th><th>Распоред</th><th>Наставник(ци)</th><th>Капацитет</th>
+    <th>Секција</th><th>Распоред</th><th>Наставник(ци)</th><th>Капацитет</th>
     <?php if (!is_student($u)): ?><th>Статус</th><?php endif; ?>
     <?php if (is_student($u)): ?><th>Мој статус</th><?php endif; ?>
     <th></th>
@@ -60,6 +60,14 @@ include __DIR__ . '/includes/header.php';
     <td class="right">
       <div class="row-actions" style="justify-content:flex-end">
         <a class="btn btn-sm btn-ghost" href="activity_view.php?id=<?= (int)$a['id'] ?>">Прикажи</a>
+        <?php if (is_student($u) && !$a['my_status'] && !$full): ?>
+          <form method="post" action="apply.php" class="inline">
+            <?= csrf_field() ?>
+            <input type="hidden" name="activity_id" value="<?= (int)$a['id'] ?>">
+            <input type="hidden" name="back" value="list">
+            <button class="btn btn-sm">Пријави се</button>
+          </form>
+        <?php endif; ?>
         <?php if (can_manage_activity($u, (int)$a['id'])): ?>
           <a class="btn btn-sm" href="activity_edit.php?id=<?= (int)$a['id'] ?>">Измени</a>
         <?php endif; ?>

@@ -5,7 +5,7 @@ $page_title = 'Почетна';
 
 if (is_admin($u)) {
     $counts = [
-        'Активности' => db()->query("SELECT COUNT(*) FROM activities")->fetchColumn(),
+        'Секције' => db()->query("SELECT COUNT(*) FROM activities")->fetchColumn(),
         'Ученици'    => db()->query("SELECT COUNT(*) FROM users WHERE role='student'")->fetchColumn(),
         'Наставници' => db()->query("SELECT COUNT(*) FROM users WHERE role='teacher'")->fetchColumn(),
         'Пријаве на чекању' => db()->query("SELECT COUNT(*) FROM applications WHERE status='pending'")->fetchColumn(),
@@ -25,7 +25,7 @@ include __DIR__ . '/includes/header.php';
   <div class="card">
     <h2 style="margin-top:0">Брзе радње</h2>
     <div class="row-actions">
-      <a class="btn" href="activity_edit.php">+ Нова активност</a>
+      <a class="btn" href="activity_edit.php">+ Нова секција</a>
       <a class="btn btn-ghost" href="applications.php">Преглед пријава</a>
       <a class="btn btn-ghost" href="users.php">Управљање корисницима</a>
     </div>
@@ -39,8 +39,8 @@ include __DIR__ . '/includes/header.php';
   $st->execute([$u['id']]);
   $mine = $st->fetchAll();
   ?>
-  <h2>Моје активности</h2>
-  <?php if (!$mine): ?><div class="card muted">Још нисте додељени ниједној активности.</div><?php endif; ?>
+  <h2>Моје секције</h2>
+  <?php if (!$mine): ?><div class="card muted">Још нисте додељени ниједној секцији.</div><?php endif; ?>
   <div class="grid">
     <?php foreach ($mine as $a): ?>
       <div class="card">
@@ -61,11 +61,11 @@ include __DIR__ . '/includes/header.php';
   $enrolled = (int)$st->fetchColumn();
   ?>
   <div class="grid">
-    <div class="card"><div class="stat"><?= $enrolled ?></div><div class="stat-label">Моје активности</div></div>
+    <div class="card"><div class="stat"><?= $enrolled ?></div><div class="stat-label">Моје секције</div></div>
     <div class="card">
       <div class="stat-label" style="margin-bottom:8px">Започните</div>
-      <a class="btn btn-sm" href="activities.php">Прегледај активности</a>
-      <a class="btn btn-sm btn-ghost" href="my_activities.php">Моје активности</a>
+      <a class="btn btn-sm" href="activities.php">Прегледај секције</a>
+      <a class="btn btn-sm btn-ghost" href="my_activities.php">Моје секције</a>
     </div>
   </div>
 <?php endif; ?>

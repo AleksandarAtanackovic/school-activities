@@ -69,3 +69,34 @@ function role_label(string $r): string {
 function status_badge(string $status): string {
     return '<span class="badge badge-' . e($status) . '">' . e(status_label($status)) . '</span>';
 }
+
+// Cyrillic (Serbian) -> Latin transliteration, for building usernames.
+function cyr_to_lat(string $s): string {
+    static $m = [
+        'а'=>'a','б'=>'b','в'=>'v','г'=>'g','д'=>'d','ђ'=>'dj','е'=>'e','ж'=>'z','з'=>'z',
+        'и'=>'i','ј'=>'j','к'=>'k','л'=>'l','љ'=>'lj','м'=>'m','н'=>'n','њ'=>'nj','о'=>'o',
+        'п'=>'p','р'=>'r','с'=>'s','т'=>'t','ћ'=>'c','у'=>'u','ф'=>'f','х'=>'h','ц'=>'c',
+        'ч'=>'c','џ'=>'dz','ш'=>'s',
+    ];
+    $s = mb_strtolower($s, 'UTF-8');
+    $out = '';
+    $len = mb_strlen($s, 'UTF-8');
+    for ($i = 0; $i < $len; $i++) {
+        $ch = mb_substr($s, $i, 1, 'UTF-8');
+        $out .= $m[$ch] ?? $ch;
+    }
+    return $out;
+}
+
+// Build a username: first letter of first name + surname + last 4 digits of maticni broj.
+// e.g. "Ана Новак" + "...7118" -> "anovak7118"
+function build_username(string $name, string $maticni): string {
+    $parts = preg_split('/\s+/u', trim($name));
+    $first = $parts[0] ?? '';
+    $last  = count($parts) > 1 ? $parts[count($parts) - 1] : '';
+    $digits = preg_replace('/\D/', '', $maticni);
+    $last4  = strlen($digits) >= 4 ? substr($digits, -4) : $digits;
+    $base = cyr_to_lat(mb_substr($first, 0, 1, 'UTF-8')) . cyr_to_lat($last) . $last4;
+    // keep only safe characters
+    return preg_replace('/[^a-z0-9]/', '', mb_strtolower($base, 'UTF-8'));
+}

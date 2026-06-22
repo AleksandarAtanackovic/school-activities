@@ -16,9 +16,9 @@ $pt = $page_title ?? APP_NAME;
   <?php if ($u): ?>
   <nav class="mainnav">
     <a href="dashboard.php">Почетна</a>
-    <a href="activities.php">Активности</a>
+    <a href="activities.php">Секције</a>
     <?php if (is_student($u)): ?>
-      <a href="my_activities.php">Моје активности</a>
+      <a href="my_activities.php">Моје секције</a>
       <a href="notifications.php">Обавештења</a>
     <?php endif; ?>
     <?php if (is_admin($u) || is_teacher($u)): ?>

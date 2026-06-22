@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $act->execute([$app['activity_id']]);
             $max = (int)$act->fetchColumn();
             if (approved_count((int)$app['activity_id']) >= $max) {
-                flash('Није могуће одобрити: активност је већ попуњена ('.$max.').');
+                flash('Није могуће одобрити: секција је већ попуњена ('.$max.').');
                 redirect('applications.php');
             }
         }
@@ -55,13 +55,13 @@ $rows = $st->fetchAll();
 include __DIR__ . '/includes/header.php';
 ?>
 <h1>Пријаве</h1>
-<p class="sub"><?= is_admin($u) ? 'Све пријаве ученика.' : 'Пријаве за ваше активности.' ?></p>
+<p class="sub"><?= is_admin($u) ? 'Све пријаве ученика.' : 'Пријаве за ваше секције.' ?></p>
 
 <?php if (!$rows): ?>
   <div class="card muted">Нема пријава за приказ.</div>
 <?php else: ?>
 <table>
-  <tr><th>Ученик</th><th>Разред</th><th>Активност</th><th>Пријављен</th><th>Статус</th><th class="right">Радња</th></tr>
+  <tr><th>Ученик</th><th>Разред</th><th>Секција</th><th>Пријављен</th><th>Статус</th><th class="right">Радња</th></tr>
   <?php foreach ($rows as $r): $full = $r['approved_now'] >= $r['max_students']; ?>
   <tr>
     <td><?= e($r['student_name']) ?></td>
@@ -75,7 +75,7 @@ include __DIR__ . '/includes/header.php';
         <?= csrf_field() ?>
         <input type="hidden" name="app_id" value="<?= (int)$r['id'] ?>">
         <?php if ($filterActivity): ?><input type="hidden" name="activity" value="<?= $filterActivity ?>"><?php endif; ?>
-        <button class="btn btn-sm btn-ok" name="decision" value="approved" <?= $full?'disabled title="Активност је попуњена"':'' ?>>Одобри</button>
+        <button class="btn btn-sm btn-ok" name="decision" value="approved" <?= $full?'disabled title="Секција је попуњена"':'' ?>>Одобри</button>
         <button class="btn btn-sm btn-bad" name="decision" value="rejected">Одбиј</button>
       </form>
       <?php else: ?><span class="muted">—</span><?php endif; ?>

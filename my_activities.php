@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/includes/auth.php';
 $u = require_role('student');
-$page_title = 'Моје активности';
+$page_title = 'Моје секције';
 
 $st = db()->prepare("SELECT a.*, ap.status,
         (SELECT GROUP_CONCAT(us.name SEPARATOR ', ') FROM users us JOIN activity_teachers t ON t.teacher_id=us.id WHERE t.activity_id=a.id) AS teachers
@@ -12,14 +12,14 @@ $rows = $st->fetchAll();
 
 include __DIR__ . '/includes/header.php';
 ?>
-<h1>Моје ваннаставне активности</h1>
-<p class="sub">Активности на које сте се пријавили, са статусом.</p>
+<h1>Моје ваннаставне секције</h1>
+<p class="sub">Секције на које сте се пријавили, са статусом.</p>
 
 <?php if (!$rows): ?>
-  <div class="card muted">Још се нисте пријавили ни на једну активност. <a href="activities.php">Прегледајте активности</a>.</div>
+  <div class="card muted">Још се нисте пријавили ни на једну секцију. <a href="activities.php">Прегледајте секције</a>.</div>
 <?php else: ?>
 <table>
-  <tr><th>Активност</th><th>Распоред</th><th>Наставник(ци)</th><th>Статус</th><th></th></tr>
+  <tr><th>Секција</th><th>Распоред</th><th>Наставник(ци)</th><th>Статус</th><th></th></tr>
   <?php foreach ($rows as $a): ?>
   <tr>
     <td><strong><?= e($a['name']) ?></strong></td>
