@@ -28,18 +28,8 @@ function teacher_names(int $activityId): string {
     return implode(', ', array_column($st->fetchAll(), 'name')) ?: '—';
 }
 
-include __DIR__ . '/includes/header.php';
-?>
-<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
-  <div><h1>Секције</h1><p class="sub">
-    <?= is_student($u) ? 'Прегледајте секције и пријавите се.' : ($u['role']==='admin' ? 'Све секције у школи.' : 'Секције којима сте додељени.') ?>
-  </p></div>
-  <?php if (is_admin($u)): ?><a class="btn" href="activity_edit.php">+ Нова секција</a><?php endif; ?>
-</div>
-
-<?php if (!$rows): ?>
-  <div class="card muted">Нема секција за приказ.</div>
-<?php else: ?>
+// render a full table for a set of rows
+function activity_table(array $rows, array $u): void { ?>
 <table>
   <tr>
     <th>Секција</th><th>Распоред</th><th>Наставник(ци)</th><th>Капацитет</th>
@@ -76,6 +66,38 @@ include __DIR__ . '/includes/header.php';
   </tr>
   <?php endforeach; ?>
 </table>
+<?php }
+
+// split into active (open) and inactive (closed/archived) for staff
+$active = $rows; $inactive = [];
+if (!is_student($u)) {
+    $active = array_values(array_filter($rows, fn($a) => $a['status'] === 'open'));
+    $inactive = array_values(array_filter($rows, fn($a) => $a['status'] !== 'open'));
+}
+
+include __DIR__ . '/includes/header.php';
+?>
+<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+  <div><h1>Секције</h1><p class="sub">
+    <?= is_student($u) ? 'Прегледајте секције и пријавите се.' : ($u['role']==='admin' ? 'Све секције у школи.' : 'Секције којима сте додељени.') ?>
+  </p></div>
+  <?php if (is_admin($u)): ?><a class="btn" href="activity_edit.php">+ Нова секција</a><?php endif; ?>
+</div>
+
+<?php if (!$rows): ?>
+  <div class="card muted">Нема секција за приказ.</div>
+<?php else: ?>
+  <?php if (!is_student($u) && !$active): ?>
+    <div class="card muted">Нема активних секција.</div>
+  <?php elseif ($active): ?>
+    <?php activity_table($active, $u); ?>
+  <?php endif; ?>
+
+  <?php if ($inactive): ?>
+    <h2>Неактивне секције</h2>
+    <p class="sub" style="margin-top:-6px">Затворене и архивиране секције.</p>
+    <?php activity_table($inactive, $u); ?>
+  <?php endif; ?>
 <?php endif; ?>
 
 <?php include __DIR__ . '/includes/footer.php'; ?>
