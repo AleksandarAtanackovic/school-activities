@@ -64,12 +64,12 @@ include __DIR__ . '/includes/header.php';
   <tr><th>Ученик</th><th>Разред</th><th>Секција</th><th>Пријављен</th><th>Статус</th><th class="right">Радња</th></tr>
   <?php foreach ($rows as $r): $full = $r['approved_now'] >= $r['max_students']; ?>
   <tr>
-    <td><?= e($r['student_name']) ?></td>
-    <td class="muted"><?= e($r['grade_class'] ?: '—') ?></td>
-    <td><?= e($r['activity_name']) ?> <span class="muted">(<?= (int)$r['approved_now'] ?>/<?= (int)$r['max_students'] ?>)</span></td>
-    <td class="muted"><?= e(date('d.m.Y.', strtotime($r['applied_at']))) ?></td>
-    <td><?= status_badge($r['status']) ?></td>
-    <td class="right">
+    <td data-label="Ученик"><?= e($r['student_name']) ?></td>
+    <td class="muted" data-label="Разред"><?= e($r['grade_class'] ?: '—') ?></td>
+    <td data-label="Секција"><?= e($r['activity_name']) ?> <span class="muted">(<?= (int)$r['approved_now'] ?>/<?= (int)$r['max_students'] ?>)</span></td>
+    <td class="muted" data-label="Пријављен"><?= e(date('d.m.Y.', strtotime($r['applied_at']))) ?></td>
+    <td data-label="Статус"><?= status_badge($r['status']) ?></td>
+    <td class="right" data-label="">
       <?php if ($r['status']==='pending'): ?>
       <form method="post" class="inline">
         <?= csrf_field() ?>

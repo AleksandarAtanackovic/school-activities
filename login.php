@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="sr"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Пријава · <?= e(APP_NAME) ?></title>
-<link rel="stylesheet" href="assets/style.css">
+<link rel="stylesheet" href="<?= e(asset_ver('assets/style.css')) ?>">
 </head><body>
 <div class="login-wrap">
   <h1><?= e(APP_NAME) ?></h1>

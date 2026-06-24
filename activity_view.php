@@ -91,7 +91,7 @@ include __DIR__ . '/includes/header.php';
 <h2>Уписани ученици (<?= $enrolled ?>)</h2>
 <?php if (!$members): ?><div class="card muted">Још нема уписаних ученика.</div><?php else: ?>
 <table><tr><th>Ученик</th><th>Матични број</th><th>Разред</th></tr>
-<?php foreach ($members as $m): ?><tr><td><?= e($m['name']) ?></td><td class="muted"><?= e($m['maticni_broj'] ?: '—') ?></td><td class="muted"><?= e($m['grade_class'] ?: '—') ?></td></tr><?php endforeach; ?>
+<?php foreach ($members as $m): ?><tr><td data-label="Ученик"><?= e($m['name']) ?></td><td class="muted" data-label="Матични број"><?= e($m['maticni_broj'] ?: '—') ?></td><td class="muted" data-label="Разред"><?= e($m['grade_class'] ?: '—') ?></td></tr><?php endforeach; ?>
 </table>
 <?php endif; ?>
 <?php endif; ?>

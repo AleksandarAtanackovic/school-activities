@@ -100,3 +100,11 @@ function build_username(string $name, string $maticni): string {
     // keep only safe characters
     return preg_replace('/[^a-z0-9]/', '', mb_strtolower($base, 'UTF-8'));
 }
+
+// Append the file's modification time to an asset URL so browsers fetch a fresh
+// copy whenever the file changes (prevents stale cached CSS/JS after updates).
+function asset_ver(string $relPath): string {
+    $abs = __DIR__ . '/../' . $relPath;
+    $v = @filemtime($abs) ?: time();
+    return $relPath . '?v=' . $v;
+}

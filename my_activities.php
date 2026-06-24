@@ -22,11 +22,11 @@ include __DIR__ . '/includes/header.php';
   <tr><th>Секција</th><th>Распоред</th><th>Наставник(ци)</th><th>Статус</th><th></th></tr>
   <?php foreach ($rows as $a): ?>
   <tr>
-    <td><strong><?= e($a['name']) ?></strong></td>
-    <td class="muted"><?= e($a['schedule_text'] ?: '—') ?></td>
-    <td class="muted"><?= e($a['teachers'] ?: '—') ?></td>
-    <td><?= status_badge($a['status']) ?></td>
-    <td class="right"><a class="btn btn-sm btn-ghost" href="activity_view.php?id=<?= (int)$a['id'] ?>">Отвори</a></td>
+    <td data-label="Секција"><strong><?= e($a['name']) ?></strong></td>
+    <td class="muted" data-label="Распоред"><?= e($a['schedule_text'] ?: '—') ?></td>
+    <td class="muted" data-label="Наставник(ци)"><?= e($a['teachers'] ?: '—') ?></td>
+    <td data-label="Статус"><?= status_badge($a['status']) ?></td>
+    <td class="right" data-label=""><a class="btn btn-sm btn-ghost" href="activity_view.php?id=<?= (int)$a['id'] ?>">Отвори</a></td>
   </tr>
   <?php endforeach; ?>
 </table>

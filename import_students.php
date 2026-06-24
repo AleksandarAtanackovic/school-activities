@@ -79,10 +79,10 @@ include __DIR__ . '/includes/header.php';
     <tr><th>Име и презиме</th><th>Корисничко име</th><th>Матични број</th><th>Разред</th></tr>
     <?php foreach ($created as $c): ?>
       <tr>
-        <td><?= e($c['name']) ?></td>
-        <td><strong><?= e($c['username']) ?></strong></td>
-        <td class="muted"><?= e($c['maticni']) ?></td>
-        <td class="muted"><?= e($c['grade'] ?: '—') ?></td>
+        <td data-label="Име и презиме"><?= e($c['name']) ?></td>
+        <td data-label="Корисничко име"><strong><?= e($c['username']) ?></strong></td>
+        <td class="muted" data-label="Матични број"><?= e($c['maticni']) ?></td>
+        <td class="muted" data-label="Разред"><?= e($c['grade'] ?: '—') ?></td>
       </tr>
     <?php endforeach; ?>
   </table>

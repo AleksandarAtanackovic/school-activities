@@ -84,13 +84,13 @@ include __DIR__ . '/includes/header.php';
   <tr><th>Име</th><th>Корисничко име</th><th>Матични број</th><th>Улога</th><th>Разред</th><th>Статус</th><th class="right">Радња</th></tr>
   <?php foreach ($rows as $r): ?>
   <tr>
-    <td><?= e($r['name']) ?></td>
-    <td class="muted"><?= e($r['username']) ?></td>
-    <td class="muted"><?= e($r['maticni_broj'] ?: '—') ?></td>
-    <td><?= e(role_label($r['role'])) ?></td>
-    <td class="muted"><?= e($r['grade_class'] ?: '—') ?></td>
-    <td><?= $r['active'] ? '<span class="badge badge-approved">Активан</span>' : '<span class="badge badge-rejected">Неактиван</span>' ?></td>
-    <td class="right">
+    <td data-label="Име"><?= e($r['name']) ?></td>
+    <td class="muted" data-label="Корисничко име"><?= e($r['username']) ?></td>
+    <td class="muted" data-label="Матични број"><?= e($r['maticni_broj'] ?: '—') ?></td>
+    <td data-label="Улога"><?= e(role_label($r['role'])) ?></td>
+    <td class="muted" data-label="Разред"><?= e($r['grade_class'] ?: '—') ?></td>
+    <td data-label="Статус"><?= $r['active'] ? '<span class="badge badge-approved">Активан</span>' : '<span class="badge badge-rejected">Неактиван</span>' ?></td>
+    <td class="right" data-label="">
       <?php if ((int)$r['id'] !== (int)$u['id']): ?>
       <form method="post" class="inline">
         <?= csrf_field() ?>

@@ -39,15 +39,15 @@ function activity_table(array $rows, array $u): void { ?>
   </tr>
   <?php foreach ($rows as $a): $full = $a['enrolled'] >= $a['max_students']; ?>
   <tr>
-    <td><strong><?= e($a['name']) ?></strong><div class="muted" style="font-size:13px"><?= e($a['location']) ?></div></td>
-    <td><?= e($a['schedule_text'] ?: '—') ?></td>
-    <td class="muted"><?= e(teacher_names((int)$a['id'])) ?></td>
-    <td><?= (int)$a['enrolled'] ?>/<?= (int)$a['max_students'] ?><?php if($full):?> <span class="badge badge-closed">Попуњено</span><?php endif;?></td>
-    <?php if (!is_student($u)): ?><td><?= status_badge($a['status']) ?></td><?php endif; ?>
+    <td data-label="Секција"><strong><?= e($a['name']) ?></strong><div class="muted" style="font-size:13px"><?= e($a['location']) ?></div></td>
+    <td data-label="Распоред"><?= e($a['schedule_text'] ?: '—') ?></td>
+    <td class="muted" data-label="Наставник(ци)"><?= e(teacher_names((int)$a['id'])) ?></td>
+    <td data-label="Капацитет"><?= (int)$a['enrolled'] ?>/<?= (int)$a['max_students'] ?><?php if($full):?> <span class="badge badge-closed">Попуњено</span><?php endif;?></td>
+    <?php if (!is_student($u)): ?><td data-label="Статус"><?= status_badge($a['status']) ?></td><?php endif; ?>
     <?php if (is_student($u)): ?>
-      <td><?= $a['my_status'] ? status_badge($a['my_status']) : '<span class="muted">—</span>' ?></td>
+      <td data-label="Мој статус"><?= $a['my_status'] ? status_badge($a['my_status']) : '<span class="muted">—</span>' ?></td>
     <?php endif; ?>
-    <td class="right">
+    <td class="right" data-label="">
       <div class="row-actions" style="justify-content:flex-end">
         <a class="btn btn-sm btn-ghost" href="activity_view.php?id=<?= (int)$a['id'] ?>">Прикажи</a>
         <?php if (is_student($u) && !$a['my_status'] && !$full): ?>
