@@ -61,6 +61,7 @@ include __DIR__ . '/includes/header.php';
     <?php if ($manages): ?>
       <a class="btn btn-ghost" href="activity_edit.php?id=<?= $id ?>">Измени</a>
       <a class="btn btn-ghost" href="applications.php?activity=<?= $id ?>">Пријаве</a>
+      <a class="btn btn-ghost" href="attendance.php?activity=<?= $id ?>">Присуство</a>
     <?php endif; ?>
   </div>
 </div>

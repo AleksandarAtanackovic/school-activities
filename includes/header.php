@@ -26,6 +26,7 @@ $pt = $page_title ?? APP_NAME;
       <?php endif; ?>
       <?php if (is_admin($u) || is_teacher($u)): ?>
         <a href="applications.php">Пријаве</a>
+        <a href="attendance.php">Присуство</a>
       <?php endif; ?>
       <?php if (is_admin($u)): ?>
         <a href="users.php">Корисници</a>
