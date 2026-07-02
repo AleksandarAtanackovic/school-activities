@@ -13,9 +13,11 @@ define('DB_PASS', '');                   // your database password
 
 define('APP_NAME', 'Ваннаставне секције');
 
-// Password that an admin's "Reset password" action sets for a user.
-// The user is then required to change it on next login.
-define('DEFAULT_RESET_PASSWORD', 'promeni123');
+// Default passwords set by the "Reset password" action, per role.
+// The user is required to change it on next login.
+define('RESET_PW_STUDENT', 'promeni123');
+define('RESET_PW_TEACHER', 'nastavnik123');
+define('RESET_PW_ADMIN',   'admin-reset123');
 
 // School year boundaries (used as defaults for reports). Adjust per year.
 define('SCHOOL_YEAR_START', '2025-09-01');

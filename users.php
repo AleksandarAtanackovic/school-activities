@@ -49,13 +49,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($action === 'reset_password') {
         $uid = (int)($_POST['uid'] ?? 0);
         if ($uid && $uid !== (int)$u['id']) {
-            $g = db()->prepare("SELECT name, username FROM users WHERE id=?");
+            $g = db()->prepare("SELECT name, username, role FROM users WHERE id=?");
             $g->execute([$uid]);
             if ($t = $g->fetch()) {
+                $newpw = default_reset_password($t['role']);
                 db()->prepare("UPDATE users SET password=?, must_change_password=1 WHERE id=?")
-                    ->execute([password_hash(DEFAULT_RESET_PASSWORD, PASSWORD_DEFAULT), $uid]);
+                    ->execute([password_hash($newpw, PASSWORD_DEFAULT), $uid]);
                 flash('Лозинка за „' . $t['name'] . '“ (' . $t['username'] . ') је ресетована на: '
-                    . DEFAULT_RESET_PASSWORD . '. Корисник мора да је промени при следећој пријави.');
+                    . $newpw . '. Корисник мора да је промени при следећој пријави.');
             }
         }
         redirect('users.php');
@@ -107,7 +108,7 @@ include __DIR__ . '/includes/header.php';
       <?php if ((int)$r['id'] !== (int)$u['id']): ?>
       <div class="row-actions" style="justify-content:flex-end">
         <form method="post" class="inline"
-              onsubmit="return confirm('Ресетовати лозинку на <?= e(DEFAULT_RESET_PASSWORD) ?>? Корисник ће морати да је промени при пријави.');">
+              onsubmit="return confirm('Ресетовати лозинку на <?= e(default_reset_password($r['role'])) ?>? Корисник ће морати да је промени при пријави.');">
           <?= csrf_field() ?>
           <input type="hidden" name="action" value="reset_password">
           <input type="hidden" name="uid" value="<?= (int)$r['id'] ?>">

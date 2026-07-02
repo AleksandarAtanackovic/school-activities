@@ -22,13 +22,31 @@ if ($_SERVER['REQUEST_METHOD']==='POST' && ($_POST['action'] ?? '')==='notify' &
     redirect('activity_view.php?id='.$id);
 }
 
+// Reset an enrolled student's password (staff who manage this activity).
+// NOTE: contained feature — remove this block + the button below to disable.
+if ($_SERVER['REQUEST_METHOD']==='POST' && ($_POST['action'] ?? '')==='reset_student' && $manages) {
+    csrf_check();
+    $sid = (int)($_POST['student_id'] ?? 0);
+    // student must actually be an approved member of THIS activity
+    $chk = db()->prepare("SELECT u.name, u.username FROM applications ap JOIN users u ON u.id=ap.student_id
+                          WHERE ap.activity_id=? AND ap.student_id=? AND ap.status='approved' AND u.role='student'");
+    $chk->execute([$id, $sid]);
+    if ($t = $chk->fetch()) {
+        db()->prepare("UPDATE users SET password=?, must_change_password=1 WHERE id=?")
+            ->execute([password_hash(RESET_PW_STUDENT, PASSWORD_DEFAULT), $sid]);
+        flash('Лозинка за „' . $t['name'] . '“ (' . $t['username'] . ') је ресетована на: '
+            . RESET_PW_STUDENT . '. Ученик мора да је промени при пријави.');
+    }
+    redirect('activity_view.php?id='.$id);
+}
+
 // teachers
 $tt = db()->prepare("SELECT u.name FROM users u JOIN activity_teachers t ON t.teacher_id=u.id WHERE t.activity_id=? ORDER BY u.name");
 $tt->execute([$id]);
 $teachers = array_column($tt->fetchAll(), 'name');
 
 // enrolled members
-$em = db()->prepare("SELECT u.name,u.grade_class,u.maticni_broj FROM applications ap JOIN users u ON u.id=ap.student_id
+$em = db()->prepare("SELECT u.id,u.name,u.grade_class,u.maticni_broj FROM applications ap JOIN users u ON u.id=ap.student_id
                      WHERE ap.activity_id=? AND ap.status='approved' ORDER BY u.name");
 $em->execute([$id]);
 $members = $em->fetchAll();
@@ -91,8 +109,8 @@ include __DIR__ . '/includes/header.php';
 <?php if ($manages): ?>
 <h2>Уписани ученици (<?= $enrolled ?>)</h2>
 <?php if (!$members): ?><div class="card muted">Још нема уписаних ученика.</div><?php else: ?>
-<table><tr><th>Ученик</th><th>Матични број</th><th>Разред</th></tr>
-<?php foreach ($members as $m): ?><tr><td data-label="Ученик"><?= e($m['name']) ?></td><td class="muted" data-label="Матични број"><?= e($m['maticni_broj'] ?: '—') ?></td><td class="muted" data-label="Разред"><?= e($m['grade_class'] ?: '—') ?></td></tr><?php endforeach; ?>
+<table><tr><th>Ученик</th><th>Матични број</th><th>Разред</th><th class="right">Радња</th></tr>
+<?php foreach ($members as $m): ?><tr><td data-label="Ученик"><?= e($m['name']) ?></td><td class="muted" data-label="Матични број"><?= e($m['maticni_broj'] ?: '—') ?></td><td class="muted" data-label="Разред"><?= e($m['grade_class'] ?: '—') ?></td><td class="right" data-label=""><form method="post" class="inline" onsubmit="return confirm('Ресетовати лозинку овог ученика на <?= e(RESET_PW_STUDENT) ?>?');"><?= csrf_field() ?><input type="hidden" name="action" value="reset_student"><input type="hidden" name="student_id" value="<?= (int)$m['id'] ?>"><button class="btn btn-sm btn-ghost">Ресетуј лозинку</button></form></td></tr><?php endforeach; ?>
 </table>
 <?php endif; ?>
 <?php endif; ?>

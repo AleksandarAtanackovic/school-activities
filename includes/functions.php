@@ -108,3 +108,12 @@ function asset_ver(string $relPath): string {
     $v = @filemtime($abs) ?: time();
     return $relPath . '?v=' . $v;
 }
+
+// Default reset password for a given role (see config.php).
+function default_reset_password(string $role): string {
+    switch ($role) {
+        case 'student': return RESET_PW_STUDENT;
+        case 'teacher': return RESET_PW_TEACHER;
+        default:        return RESET_PW_ADMIN;
+    }
+}
