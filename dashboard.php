@@ -63,9 +63,11 @@ include __DIR__ . '/includes/header.php';
   <div class="grid">
     <div class="card"><div class="stat"><?= $enrolled ?></div><div class="stat-label">Моје секције</div></div>
     <div class="card">
-      <div class="stat-label" style="margin-bottom:8px">Започните</div>
-      <a class="btn btn-sm" href="activities.php">Прегледај секције</a>
-      <a class="btn btn-sm btn-ghost" href="my_activities.php">Моје секције</a>
+      <div class="stat-label" style="margin-bottom:10px">Започните</div>
+      <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-start">
+        <a class="btn btn-sm" href="activities.php">Прегледај секције</a>
+        <a class="btn btn-sm btn-ghost" href="my_activities.php">Моје секције</a>
+      </div>
     </div>
   </div>
 <?php endif; ?>

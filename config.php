@@ -13,6 +13,10 @@ define('DB_PASS', '');                   // your database password
 
 define('APP_NAME', 'Ваннаставне секције');
 
+// Password that an admin's "Reset password" action sets for a user.
+// The user is then required to change it on next login.
+define('DEFAULT_RESET_PASSWORD', 'promeni123');
+
 // School year boundaries (used as defaults for reports). Adjust per year.
 define('SCHOOL_YEAR_START', '2025-09-01');
 define('SCHOOL_YEAR_END',   '2026-06-30');

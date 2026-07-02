@@ -46,6 +46,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             flash('Корисник је ажуриран.');
         }
         redirect('users.php');
+    } elseif ($action === 'reset_password') {
+        $uid = (int)($_POST['uid'] ?? 0);
+        if ($uid && $uid !== (int)$u['id']) {
+            $g = db()->prepare("SELECT name, username FROM users WHERE id=?");
+            $g->execute([$uid]);
+            if ($t = $g->fetch()) {
+                db()->prepare("UPDATE users SET password=?, must_change_password=1 WHERE id=?")
+                    ->execute([password_hash(DEFAULT_RESET_PASSWORD, PASSWORD_DEFAULT), $uid]);
+                flash('Лозинка за „' . $t['name'] . '“ (' . $t['username'] . ') је ресетована на: '
+                    . DEFAULT_RESET_PASSWORD . '. Корисник мора да је промени при следећој пријави.');
+            }
+        }
+        redirect('users.php');
     }
 }
 
@@ -92,12 +105,21 @@ include __DIR__ . '/includes/header.php';
     <td data-label="Статус"><?= $r['active'] ? '<span class="badge badge-approved">Активан</span>' : '<span class="badge badge-rejected">Неактиван</span>' ?></td>
     <td class="right" data-label="">
       <?php if ((int)$r['id'] !== (int)$u['id']): ?>
-      <form method="post" class="inline">
-        <?= csrf_field() ?>
-        <input type="hidden" name="action" value="toggle">
-        <input type="hidden" name="uid" value="<?= (int)$r['id'] ?>">
-        <button class="btn btn-sm btn-ghost"><?= $r['active']?'Деактивирај':'Активирај' ?></button>
-      </form>
+      <div class="row-actions" style="justify-content:flex-end">
+        <form method="post" class="inline"
+              onsubmit="return confirm('Ресетовати лозинку на <?= e(DEFAULT_RESET_PASSWORD) ?>? Корисник ће морати да је промени при пријави.');">
+          <?= csrf_field() ?>
+          <input type="hidden" name="action" value="reset_password">
+          <input type="hidden" name="uid" value="<?= (int)$r['id'] ?>">
+          <button class="btn btn-sm btn-ghost">Ресетуј лозинку</button>
+        </form>
+        <form method="post" class="inline">
+          <?= csrf_field() ?>
+          <input type="hidden" name="action" value="toggle">
+          <input type="hidden" name="uid" value="<?= (int)$r['id'] ?>">
+          <button class="btn btn-sm btn-ghost"><?= $r['active']?'Деактивирај':'Активирај' ?></button>
+        </form>
+      </div>
       <?php else: ?><span class="muted">Ви</span><?php endif; ?>
     </td>
   </tr>
